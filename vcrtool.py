@@ -35,7 +35,7 @@ class ResponseTuple(NamedTuple):
     command_status: CommandStatus
     return_data: bytes
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             f'ResponseTuple(jlip_id={self.jlip_id}, '
             f'command_status={str(self.command_status)}, '
@@ -52,7 +52,7 @@ class CommandResponse:
         self.tuple = ResponseTuple(resp[2], CommandStatus(resp[3] & 0b111),
                                    resp[4:10])
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             '<CommandResponse '
             f'checksum={hex(self.checksum)} '
@@ -86,7 +86,7 @@ class VTRModeResponse(CommandResponse):
         self.tape_inserted = ((resp[4] >> 4) & 1) == 0
         self.vtr_mode = VTRMode((resp[4]) & 0b1111)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             '<VTRModeResponse '
             f'checksum={hex(self.checksum)} '
@@ -117,7 +117,7 @@ class VTUModeResponse(CommandResponse):
         self.channel_number_non_bank = (resp[6] * 100) + resp[7]
         self.real_channel = resp[5]
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return (
             '<VTUModeResponse '
             f'band_info={str(self.band_info)} '
@@ -180,65 +180,73 @@ class JLIPHRSeriesVCR:
             raise ValueError(f'Command status: {ret[3]}')
         return ret
 
-    def eject(self):
+    def eject(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x41, 0x60))
 
-    def fast_forward(self):
+    def fast_forward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x44, 0x75))
 
-    def fast_play_forward(self):
+    def fast_play_forward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x21))
 
-    def fast_play_backward(self):
+    def fast_play_backward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x25))
 
-    def get_input(self):
+    def get_input(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x21))
 
-    def get_play_speed(self):
+    def get_play_speed(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x48, 0x4E, 0x20))
 
-    def get_power_state(self):
-        return CommandResponse(self.send_command(0x3E, 0x4E, 0x20))
+    def get_power_state(self) -> PowerStateResponse:
+        return PowerStateResponse(self.send_command(0x3E, 0x4E, 0x20))
 
-    def get_tuner_mode(self):
+    def get_tuner_mode(self) -> VTUModeResponse:
         return VTUModeResponse(self.send_command(0xA, 0x4E, 0x20))
 
-    def get_vtr_mode(self):
+    def get_vtr_mode(self) -> VTRModeResponse:
         return VTRModeResponse(self.send_command(0x08, 0x4E, 0x20))
 
-    def nop(self):
+    def nop(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x7c, 0x4e, 0x20))
 
-    def pause(self):
+    def pause(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x6d))
 
-    def pause_recording(self):
+    def pause_recording(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x42, 0x6d))
 
-    def play(self):
+    def play(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x75))
 
-    def preset_channel_up(self):
+    def preset_channel_up(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x44, 0x73, 0, 0, 0x7E))
 
-    def preset_channel_down(self):
+    def preset_channel_down(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x44, 0x63, 0, 0, 0x7E))
 
-    def real_channel_down(self):
+    def real_channel_down(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x42, 0x63, 0, 0, 0x44))
 
-    def real_channel_up(self):
+    def real_channel_up(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x42, 0x73, 0, 0, 0x44))
 
-    def record(self):
+    def record(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x42, 0x70))
 
-    def reset_counter(self):
+    def reset_counter(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x48, 0x4D, 0x20))
 
-    def rewind(self):
+    def rewind(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x44, 0x65))
+
+    def rewind_wait(self) -> CommandResponse:
+        resp = self.rewind()
+        while True:
+            resp = self.get_vtr_mode()
+            if resp.vtr_mode == VTRMode.STOP:
+                break
+        return resp
 
     def set_channel(self, channel: int):
         return CommandResponse(
@@ -262,22 +270,22 @@ class JLIPHRSeriesVCR:
     def select_real_channel(self, n: int, nn: int, nnn: int):
         return CommandResponse(self.send_command(0x0A, 0x42, n, nn, nnn, 0x44))
 
-    def slow_play_backward(self):
+    def slow_play_backward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x24))
 
-    def slow_play_forward(self):
+    def slow_play_forward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x20))
 
-    def stop(self):
+    def stop(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x44, 0x60))
 
-    def turn_off(self):
+    def turn_off(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x3E, 0x40, 0x60))
 
-    def turn_on(self):
+    def turn_on(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x3E, 0x40, 0x70))
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return ('<JLIPHRSeriesVCR '
                 f'jlip_id={self.jlip_id} '
                 f'raise_on_error={self._raise}'
