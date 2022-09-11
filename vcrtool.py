@@ -1,7 +1,6 @@
 from time import sleep
 from typing import Any, TypeVar
 import enum
-import reprlib
 
 import click
 import serial
@@ -24,9 +23,9 @@ def pad_right(value: Any, list_: list[T], max_length: int) -> list[T]:
 
 
 class CommandStatus(enum.IntEnum):
-    COMMAND_NOT_IMPLEMENTED = 1
     COMMAND_ACCEPTED = 3
     COMMAND_ACCEPTED_NOT_COMPLETE = 4
+    COMMAND_NOT_IMPLEMENTED = 1
     COMMAND_NOT_POSSIBLE = 5
 
 
@@ -50,26 +49,26 @@ class TapeState(enum.IntEnum):
 
 class VTRMode(enum.IntEnum):
     EJECT = 0
-    STOP = 1
     FF = 0b10
-    REW = 0b11
-    PLAY_FWD = 0b101
-    PLAY_BWD = 0b110
-    PAUSE = 0b111
-    REC_PAUSE = 0b1101
-    REC = 0b1110
     NO_MODE = 0b1111
+    PAUSE = 0b111
+    PLAY_BWD = 0b110
+    PLAY_FWD = 0b101
+    REC = 0b1110
+    REC_PAUSE = 0b1101
+    REW = 0b11
+    STOP = 1
 
 
 class VTRModeResponse(CommandResponse):
     def __init__(self, resp: bytes):
         super().__init__(resp)
+        self.drop_frame_mode_enabled = bool(resp[5] & 1)
+        self.framerate = 25 if ((resp[5] >> 2) & 1) == 1 else 30
+        self.hour, self.minute, self.second, self.frame = resp[6:10]
         self.recordable = not bool(resp[4] >> 5 & 1)
         self.tape_state = TapeState((resp[4] >> 4) & 1)
         self.vtr_mode = VTRMode((resp[4]) & 0b1111)
-        self.framerate = 25 if ((resp[5] >> 2) & 1) == 1 else 30
-        self.drop_frame_mode_enabled = bool(resp[5] & 1)
-        self.hour, self.minute, self.second, self.frame = resp[6:10]
 
     def __repr__(self):
         return (
