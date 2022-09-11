@@ -2,11 +2,12 @@ from time import sleep
 from typing import Any, NamedTuple, TypeVar
 import enum
 
+from pyrate_limiter import Duration, Limiter, RequestRate
 import click
 import serial
 
+limiter = Limiter(RequestRate(1, Duration.SECOND))
 T = TypeVar('T')
-WAIT_TIME = 0.1  # seconds
 
 
 def checksum(vals: list[int]) -> int:
@@ -149,13 +150,15 @@ class JLIPHRSeriesVCR:
                                   rtscts=True,
                                   stopbits=serial.STOPBITS_ONE,
                                   timeout=2)
-        self._jlip_id = jlip_id
+        self.jlip_id = jlip_id
         self._raise = raise_on_error_response
+        self._tuner_info = self.get_tuner_mode()
 
+    @limiter.ratelimit('serial', delay=True)
     def send_command(self, *args: Any) -> bytes:
-        arr = [0xFF, 0xFF, self._jlip_id] + pad_right(0, list(args), 7)
+        arr = [0xFF, 0xFF, self.jlip_id] + pad_right(0, list(args), 7)
         self._ser.write(arr + [checksum(arr)])
-        sleep(WAIT_TIME)
+        sleep(0.1)
         ret = self._ser.read(11)
         actual_checksum = checksum(list(x for x in ret)[:10])
         if ret[10] != actual_checksum:
@@ -167,12 +170,6 @@ class JLIPHRSeriesVCR:
                         CommandStatus.COMMAND_ACCEPTED_NOT_COMPLETE)):
             raise ValueError(f'Command status: {ret[3]}')
         return ret
-
-    def channel_down(self):
-        return CommandResponse(self.send_command(0x63))
-
-    def channel_up(self):
-        return CommandResponse(self.send_command(0x73))
 
     def eject(self):
         return CommandResponse(self.send_command(0x08, 0x41, 0x60))
@@ -213,8 +210,17 @@ class JLIPHRSeriesVCR:
     def play(self):
         return CommandResponse(self.send_command(0x08, 0x43, 0x75))
 
-    def stop(self):
-        return CommandResponse(self.send_command(0x08, 0x44, 0x60))
+    def preset_channel_up(self):
+        return CommandResponse(self.send_command(0x0A, 0x44, 0x73, 0, 0, 0x7E))
+
+    def preset_channel_down(self):
+        return CommandResponse(self.send_command(0x0A, 0x44, 0x63, 0, 0, 0x7E))
+
+    def real_channel_down(self):
+        return CommandResponse(self.send_command(0x0A, 0x42, 0x63, 0, 0, 0x44))
+
+    def real_channel_up(self):
+        return CommandResponse(self.send_command(0x0A, 0x42, 0x73, 0, 0, 0x44))
 
     def record(self):
         return CommandResponse(self.send_command(0x08, 0x42, 0x70))
@@ -253,15 +259,30 @@ class JLIPHRSeriesVCR:
     def slow_play_forward(self):
         return CommandResponse(self.send_command(0x08, 0x43, 0x20))
 
+    def stop(self):
+        return CommandResponse(self.send_command(0x08, 0x44, 0x60))
+
     def turn_off(self):
         return CommandResponse(self.send_command(0x3E, 0x40, 0x60))
 
     def turn_on(self):
         return CommandResponse(self.send_command(0x3E, 0x40, 0x70))
 
+    def __repr__(self):
+        return ('<JLIPHRSeriesVCR '
+                f'jlip_id={self.jlip_id} '
+                f'raise_on_error={self._raise}'
+                f'tuner_info={self._tuner_info}'
+                '>')
+
 
 @click.command()
 @click.argument('serial_device')
-def main(serial_device: str) -> None:
+@click.argument('commands', nargs=-1)
+def main(serial_device: str, commands: list[str]) -> None:
     vcr = JLIPHRSeriesVCR(serial_device, raise_on_error_response=False)
-    print(vcr.turn_on())
+    disallowed = ('send_command',)
+    for command in (
+            x for x in commands
+            if x not in disallowed and getattr(vcr, x, None) is not None):
+        getattr(vcr, command)()
