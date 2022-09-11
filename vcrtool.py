@@ -6,7 +6,7 @@ from pyrate_limiter import Duration, Limiter, RequestRate
 import click
 import serial
 
-limiter = Limiter(RequestRate(10, Duration.SECOND))
+limiter = Limiter(RequestRate(5, Duration.SECOND))
 T = TypeVar('T')
 
 
