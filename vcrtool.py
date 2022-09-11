@@ -294,4 +294,4 @@ def main(serial_device: str, commands: list[str]) -> None:
     for command in (
             x for x in commands
             if x not in disallowed and getattr(vcr, x, None) is not None):
-        getattr(vcr, command)()
+        print(getattr(vcr, command)())
