@@ -6,7 +6,7 @@ from pyrate_limiter import Duration, Limiter, RequestRate
 import click
 import serial
 
-limiter = Limiter(RequestRate(1, Duration.SECOND))
+limiter = Limiter(RequestRate(10, Duration.SECOND))
 T = TypeVar('T')
 
 
@@ -242,10 +242,8 @@ class JLIPHRSeriesVCR:
 
     def rewind_wait(self) -> CommandResponse:
         resp = self.rewind()
-        while True:
-            resp = self.get_vtr_mode()
-            if resp.vtr_mode == VTRMode.STOP:
-                break
+        while (resp := self.get_vtr_mode()).vtr_mode != VTRMode.STOP:
+            sleep(1)
         return resp
 
     def set_channel(self, channel: int):
