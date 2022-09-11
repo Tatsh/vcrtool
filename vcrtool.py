@@ -138,7 +138,16 @@ class PowerStateResponse(CommandResponse):
 
 
 class JLIPHRSeriesVCR:
-    """Class to run commands against HR-S9600U and similar VCRs over JLIP."""
+    """Class to run commands against HR-S9600U and similar VCRs over JLIP.
+
+    References:
+
+        - http://www.johnwillis.com/2018/09/jvc-jlip-joint-level-interface-protocol.html
+        - https://dragonminded.com/bemani/dvdemu/JLIPProtocolDocumentation.pdf
+        - https://github.com/yasdfgr/jlip
+        - https://jvc-america.com/english/download/mpverup114-e.html
+        - https://www.remotecentral.com/cgi-bin/forums/viewpost.cgi?1040370
+    """
     def __init__(self,
                  serial_path: str,
                  *,
