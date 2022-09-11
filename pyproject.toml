@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "vcrtool"
+version = "0.0.1"
+description = "Tool for me."
+authors = ["Andrew Udvare <audvare@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+pyserial = "^3.5"
+click = "^8.1.3"
+
+[tool.poetry.group.dev.dependencies]
+pylint = "^2.15.2"
+pylint-quotes = "^0.2.3"
+toml = "^0.10.2"
+
+[tool.poetry.scripts]
+vcrtool = 'vcrtool:main'
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
