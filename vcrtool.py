@@ -6,7 +6,20 @@ from pyrate_limiter import Duration, Limiter, RequestRate
 import click
 import serial
 
-limiter = Limiter(RequestRate(1, Duration.SECOND))
+__all__ = (
+    'BandInfo',
+    'CommandResponse',
+    'CommandStatus',
+    'JLIPHRSeriesVCR',
+    'PowerStateResponse',
+    'ResponseTuple',
+    'VTRMode',
+    'VTRModeResponse',
+    'VTUModeResponse',
+    'main',
+)
+
+limiter = Limiter(RequestRate(2, Duration.SECOND))
 T = TypeVar('T')
 
 
@@ -182,6 +195,14 @@ class JLIPHRSeriesVCR:
 
     def eject(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x41, 0x60))
+
+    def eject_wait(self) -> CommandResponse:
+        resp = self.stop()
+        sleep(0.5)
+        resp = self.eject()
+        while (resp := self.get_vtr_mode()).vtr_mode != VTRMode.EJECT:
+            sleep(0.25)
+        return resp
 
     def fast_forward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x44, 0x75))
