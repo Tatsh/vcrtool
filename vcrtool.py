@@ -269,26 +269,28 @@ class JLIPHRSeriesVCR:
             sleep(1)
         return resp
 
-    def set_channel(self, channel: int):
+    def set_channel(self, channel: int) -> CommandResponse:
         return CommandResponse(
             self.send_command(0x0a, 0x44, 0x71, 0, channel, 0x7E))
 
-    def set_input(self, n: int, nn: int):
+    def set_input(self, n: int, nn: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x59, n, nn, 0x7F))
 
-    def set_record_mode(self, n: int):
+    def set_record_mode(self, n: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x48, 0x43, n))
 
-    def set_record_speed(self, n: int):
+    def set_record_speed(self, n: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x48, 0x42, n))
 
-    def select_band(self, n: int):
+    def select_band(self, n: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x40, 0x71, n))
 
-    def select_preset_channel(self, n: int, nn: int, nnn: int):
+    def select_preset_channel(self, n: int, nn: int,
+                              nnn: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x44, n, nn, nnn, 0x7E))
 
-    def select_real_channel(self, n: int, nn: int, nnn: int):
+    def select_real_channel(self, n: int, nn: int,
+                            nnn: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x0A, 0x42, n, nn, nnn, 0x44))
 
     def slow_play_backward(self) -> CommandResponse:
