@@ -151,6 +151,21 @@ class PowerStateResponse(CommandResponse):
         self.is_on = bool(resp[4])
 
 
+class DeviceNameResponse(CommandResponse):
+    def __init__(self, resp: bytes):
+        super().__init__(resp)
+        self.name = ''.join(chr(x) for x in self.return_data)
+
+    def __repr__(self) -> str:
+        return (
+            '<DeviceNameResponse '
+            f'checksum={hex(self.checksum)} '
+            f'name="{self.name}" '
+            f'return_data=[{", ".join(f"0x{n:02x}" for n in self.return_data[1:])}] '
+            f'status={str(self.status)}'
+            '>')
+
+
 class JLIPHRSeriesVCR:
     """Class to run commands against HR-S9600U and similar VCRs over JLIP.
 
@@ -168,10 +183,8 @@ class JLIPHRSeriesVCR:
                  jlip_id: int = 1,
                  raise_on_error_response: bool = True):
         self._ser = serial.Serial(serial_path,
-                                  bytesize=serial.EIGHTBITS,
                                   parity=serial.PARITY_ODD,
                                   rtscts=True,
-                                  stopbits=serial.STOPBITS_ONE,
                                   timeout=2)
         self.jlip_id = jlip_id
         self._raise = raise_on_error_response
@@ -221,8 +234,27 @@ class JLIPHRSeriesVCR:
     def fast_play_backward(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x43, 0x25))
 
+    def frame_step(self) -> CommandResponse:
+        return CommandResponse(self.send_command(0x48, 0x46, 0x75, 0x01))
+
+    def frame_step_back(self) -> CommandResponse:
+        return CommandResponse(self.send_command(0x48, 0x46, 0x65, 0x01))
+
+    def get_baud_rate_supported(self) -> CommandResponse:
+        """0x21 is returned, meaning 19200 baud, but it is a lie."""
+        return CommandResponse(self.send_command(0x7C, 0x48, 0x20))
+
+    def get_device_code(self) -> CommandResponse:
+        return CommandResponse(self.send_command(0x7C, 0x49))
+
+    def get_device_name(self) -> CommandResponse:
+        return DeviceNameResponse(self.send_command(0x7C, 0x4C))
+
     def get_input(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x58, 0x20))
+
+    def get_machine_code(self) -> CommandResponse:
+        return CommandResponse(self.send_command(0x7C, 0x45))
 
     def get_play_speed(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x48, 0x4E, 0x20))
@@ -282,6 +314,11 @@ class JLIPHRSeriesVCR:
     def set_channel(self, channel: int) -> CommandResponse:
         return CommandResponse(
             self.send_command(0x0a, 0x44, 0x71, 0, channel, 0x7E))
+
+    def set_jlip_id(self, n: int) -> CommandResponse:
+        if n <= 0 or n > 99:
+            raise ValueError(n)
+        return CommandResponse(self.send_command(0x7C, 0x41, n))
 
     def set_input(self, n: int, nn: int) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x59, n, nn, 0x7F))
