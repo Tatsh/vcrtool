@@ -64,6 +64,7 @@ async def a_main(video_device: str, audio_device: str, length: int,
     logger.debug('Starting ffmpeg')
     length = int(length) + 15
     logger.debug(f'Will record for {length} seconds')
+    output_base, _ = splitext(output)
     ffmpeg_proc = await asp.create_subprocess_exec(
         'ffmpeg',
         '-hide_banner',
@@ -99,12 +100,12 @@ async def a_main(video_device: str, audio_device: str, length: int,
         '-t',
         str(length),
         output,
+        env=dict(FFREPORT=f'file={output_base}.log:level=40'),
         stdout=asp.PIPE,
         stderr=asp.PIPE,
     )
     vbi_proc = None
     if vbi_device:
-        output_base, _ = splitext(output)
         output_vbi = f'{output_base}.vbi'
         try:
             os.remove(output_vbi)
@@ -113,15 +114,26 @@ async def a_main(video_device: str, audio_device: str, length: int,
         logger.debug(
             f'Starting zvbi2raw with device {vbi_device} and outputting to {output_vbi}'
         )
-        vbi_proc = await asp.create_subprocess_exec(
-            'zvbi2raw', '-d', vbi_device, '-o', f'{output_base}.vbi')
+        vbi_proc = await asp.create_subprocess_exec('zvbi2raw',
+                                                    '-d',
+                                                    vbi_device,
+                                                    '-o',
+                                                    f'{output_base}.vbi',
+                                                    stdout=asp.PIPE,
+                                                    stderr=asp.PIPE)
     else:
         logger.debug('VBI device not specified')
     await a_debug_sleep(2)
     logger.debug(f'Setting device {video_device} input to {input_index}')
-    change_input_proc = await asp.create_subprocess_exec(
-        'v4l2-ctl', '-d', video_device, '-i', str(input_index))
+    change_input_proc = await asp.create_subprocess_exec('v4l2-ctl',
+                                                         '-d',
+                                                         video_device,
+                                                         '-i',
+                                                         str(input_index),
+                                                         stdout=asp.PIPE,
+                                                         stderr=asp.PIPE)
     await change_input_proc.wait()
+    logger.debug(f'v4l2-ctl exited with code {change_input_proc.returncode}')
     if change_input_proc.returncode != 0:
         raise click.Abort('Failed to set input')
     await a_debug_sleep(0.25)
@@ -130,17 +142,19 @@ async def a_main(video_device: str, audio_device: str, length: int,
     await a_debug_sleep(1)
     logger.debug('Starting VCR playback')
     vcr.play()
+    framerate = vcr.get_vtr_mode(fast=True).framerate
     try:
         while ffmpeg_proc.returncode is None:
             data = vcr.get_vtr_mode(fast=True)
             print(
                 f'{data.hour:02}:{data.minute:02}:{data.second:02}.'
-                f'{(data.frame / 30) * 1000:04.0f}',
+                f'{(data.frame / framerate) * 1000:04.0f}',
                 end='\r')
     except KeyboardInterrupt:
         logger.info('Received keyboard interrupt. Terminating ffmpeg.')
         ffmpeg_proc.terminate()
     await ffmpeg_proc.wait()
+    logger.debug(f'ffmpeg exited with code {ffmpeg_proc.returncode}')
     if ffmpeg_proc.returncode != 0:
         logger.warning('ffmpeg did not exit cleanly')
         return 1
@@ -150,6 +164,7 @@ async def a_main(video_device: str, audio_device: str, length: int,
             vbi_proc.terminate()
         except ProcessLookupError:
             pass
+        logger.debug(f'zvbi2raw exited with code {vbi_proc.returncode}')
         if vbi_proc.returncode != 0:
             logger.warning('vbi2raw did not complete successfully')
     return 0
