@@ -3,6 +3,7 @@ archiver
 dedented
 ehthumbs
 epub
+ffreport
 flac
 ildct
 ilme
