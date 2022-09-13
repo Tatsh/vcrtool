@@ -134,7 +134,8 @@ async def a_main(video_device: str, audio_device: str, length: int,
         while ffmpeg_proc.returncode is None:
             data = vcr.get_vtr_mode(fast=True)
             print(
-                f'{data.hour:02}:{data.minute:02}:{data.second:02}.{(data.frame / 30) * 1000:04}',
+                f'{data.hour:02}:{data.minute:02}:{data.second:02}.'
+                f'{(data.frame / 30) * 1000:04.0f}',
                 end='\r')
     except KeyboardInterrupt:
         logger.info('Received keyboard interrupt. Terminating ffmpeg.')
