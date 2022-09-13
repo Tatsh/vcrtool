@@ -20,6 +20,7 @@ __all__ = (
 )
 
 limiter = Limiter(RequestRate(2, Duration.SECOND))
+fast_limiter = Limiter(RequestRate(10, Duration.SECOND))
 T = TypeVar('T')
 
 
@@ -174,10 +175,8 @@ class JLIPHRSeriesVCR:
                                   timeout=2)
         self.jlip_id = jlip_id
         self._raise = raise_on_error_response
-        self._tuner_info = self.get_tuner_mode()
 
-    @limiter.ratelimit('serial', delay=True)
-    def send_command(self, *args: Any) -> bytes:
+    def send_command_base(self, *args: Any) -> bytes:
         arr = [0xFF, 0xFF, self.jlip_id] + pad_right(0, list(args), 7)
         self._ser.write(arr + [checksum(arr)])
         sleep(0.1)
@@ -187,11 +186,20 @@ class JLIPHRSeriesVCR:
             raise ValueError(
                 f'Checksum did not match. Expected {actual_checksum} but '
                 f'received {ret[10]}')
-        if (self._raise and (ret[3] & 0b111)
-                not in (CommandStatus.COMMAND_ACCEPTED,
-                        CommandStatus.COMMAND_ACCEPTED_NOT_COMPLETE)):
-            raise ValueError(f'Command status: {ret[3]}')
+        status = ret[3] & 0b111
+        if (self._raise and
+            (status) not in (CommandStatus.COMMAND_ACCEPTED,
+                             CommandStatus.COMMAND_ACCEPTED_NOT_COMPLETE)):
+            raise ValueError(f'Command status: {status}')
         return ret
+
+    @limiter.ratelimit('serial', delay=True)
+    def send_command(self, *args: Any) -> bytes:
+        return self.send_command_base(*args)
+
+    @fast_limiter.ratelimit('serial_fast', delay=True)
+    def send_command_fast(self, *args: Any) -> bytes:
+        return self.send_command_base(*args)
 
     def eject(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x08, 0x41, 0x60))
@@ -225,8 +233,10 @@ class JLIPHRSeriesVCR:
     def get_tuner_mode(self) -> VTUModeResponse:
         return VTUModeResponse(self.send_command(0xA, 0x4E, 0x20))
 
-    def get_vtr_mode(self) -> VTRModeResponse:
-        return VTRModeResponse(self.send_command(0x08, 0x4E, 0x20))
+    def get_vtr_mode(self, fast: bool = False) -> VTRModeResponse:
+        return VTRModeResponse(
+            (self.send_command_fast if fast else self.send_command)(0x08, 0x4E,
+                                                                    0x20))
 
     def nop(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x7c, 0x4e, 0x20))
@@ -312,7 +322,6 @@ class JLIPHRSeriesVCR:
         return ('<JLIPHRSeriesVCR '
                 f'jlip_id={self.jlip_id} '
                 f'raise_on_error={self._raise}'
-                f'tuner_info={self._tuner_info}'
                 '>')
 
 
@@ -321,7 +330,7 @@ class JLIPHRSeriesVCR:
 @click.argument('commands', nargs=-1)
 def main(serial_device: str, commands: list[str]) -> None:
     vcr = JLIPHRSeriesVCR(serial_device, raise_on_error_response=False)
-    disallowed = ('send_command',)
+    disallowed = ('send_command', 'send_command_fast')
     for command in (
             x for x in commands
             if x not in disallowed and getattr(vcr, x, None) is not None):
