@@ -257,6 +257,15 @@ class JLIPHRSeriesVCR:
         return CommandResponse(self.send_command(0x7C, 0x45))
 
     def get_play_speed(self) -> CommandResponse:
+        """
+        Known responses in the first data field:
+
+        - `0x7F` is returned when inapplicable.
+        - `0x75` means normal.
+        - `0x77` means playing forward quickly.
+        - `0x67` means playing backward quickly.
+        - `0x6D` means paused or frame advancing.
+        """
         return CommandResponse(self.send_command(0x48, 0x4E, 0x20))
 
     def get_power_state(self) -> PowerStateResponse:
