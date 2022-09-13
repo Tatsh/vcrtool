@@ -222,7 +222,7 @@ class JLIPHRSeriesVCR:
         return CommandResponse(self.send_command(0x08, 0x43, 0x25))
 
     def get_input(self) -> CommandResponse:
-        return CommandResponse(self.send_command(0x08, 0x43, 0x21))
+        return CommandResponse(self.send_command(0x08, 0x58, 0x20))
 
     def get_play_speed(self) -> CommandResponse:
         return CommandResponse(self.send_command(0x48, 0x4E, 0x20))
