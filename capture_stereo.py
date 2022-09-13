@@ -68,6 +68,8 @@ async def a_main(video_device: str, audio_device: str, length: int,
     ffmpeg_proc = await asp.create_subprocess_exec(
         'ffmpeg',
         '-hide_banner',
+        '-loglevel',
+        'warning',
         '-y',
         '-thread_queue_size',
         str(THREAD_QUEUE_SIZE),
@@ -101,8 +103,6 @@ async def a_main(video_device: str, audio_device: str, length: int,
         str(length),
         output,
         env=dict(FFREPORT=f'file={output_base}.log:level=40'),
-        stdout=asp.PIPE,
-        stderr=asp.PIPE,
     )
     vbi_proc = None
     if vbi_device:
