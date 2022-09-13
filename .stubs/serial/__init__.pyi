@@ -7,9 +7,7 @@ class Serial:
     def __init__(self,
                  path: str,
                  *,
-                 bytesize: int,
-                 parity: int,
-                 stopbits: int,
+                 parity: int = ...,
                  timeout: int = ...,
                  rtscts: bool = ...) -> None:
         ...
