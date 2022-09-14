@@ -205,7 +205,7 @@ async def _a_main(video_device: str, audio_device: str, length: int,
 @click.option('-i', '--input-index', default=2, type=int)
 @click.option('-n', '--audio-device-name', required=True)
 @click.option('-s', '--serial', required=True)
-@click.option('-t', '--timespan', default='372m')
+@click.option('-t', '--timespan', default=DEFAULT_TIMESPAN)
 @click.option('-v', '--video-device', required=True)
 @click.argument('output')
 def main(serial: str, audio_device: str, audio_device_name: str,
