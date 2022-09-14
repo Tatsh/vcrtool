@@ -11,8 +11,9 @@ import sys
 from loguru import logger
 from pytimeparse.timeparse import timeparse
 import click
+import psutil
 
-from vcrtool import JLIPHRSeriesVCR
+from vcrtool import JLIPHRSeriesVCR, VTRMode
 
 DEFAULT_TIMESPAN = '372m'
 THREAD_QUEUE_SIZE = 2048
@@ -102,8 +103,7 @@ async def a_main(video_device: str, audio_device: str, length: int,
         '-t',
         str(length),
         output,
-        env=dict(FFREPORT=f'file={output_base}.log:level=40'),
-    )
+        env=dict(FFREPORT=f'file={output_base}.log:level=40'))
     vbi_proc = None
     if vbi_device:
         output_vbi = f'{output_base}.vbi'
@@ -143,9 +143,16 @@ async def a_main(video_device: str, audio_device: str, length: int,
     logger.debug('Starting VCR playback')
     vcr.play()
     framerate = vcr.get_vtr_mode(fast=True).framerate
+    ffmpeg_pid = ffmpeg_proc.pid
     try:
-        while ffmpeg_proc.returncode is None:
+        while psutil.pid_exists(ffmpeg_pid):
             data = vcr.get_vtr_mode(fast=True)
+            if data.vtr_mode != VTRMode.PLAY_FWD:
+                logger.info(
+                    f'Detected VCR is no longer playing (mode = {str(data.vtr_mode)}). '
+                    'Terminating ffmpeg.')
+                ffmpeg_proc.terminate()
+                break
             print(
                 f'{data.hour:02}:{data.minute:02}:{data.second:02}.'
                 f'{(data.frame / framerate) * 1000:04.0f}',
@@ -153,9 +160,11 @@ async def a_main(video_device: str, audio_device: str, length: int,
     except KeyboardInterrupt:
         logger.info('Received keyboard interrupt. Terminating ffmpeg.')
         ffmpeg_proc.terminate()
+    # Waiting is required to avoid 'Loop that handles pid ... is closed'
     await ffmpeg_proc.wait()
     logger.debug(f'ffmpeg exited with code {ffmpeg_proc.returncode}')
-    if ffmpeg_proc.returncode != 0:
+    # 255 is what subprocess sets after waiting after calling terminate(), not ffmpeg
+    if ffmpeg_proc.returncode not in (0, 255):
         logger.warning('ffmpeg did not exit cleanly')
         return 1
     if vbi_proc:
@@ -199,6 +208,9 @@ def main(serial: str, audio_device: str, audio_device_name: str,
     vcr = JLIPHRSeriesVCR(serial)
     logger.debug('Turning VCR on')
     vcr.turn_on()
+    if not vcr.get_vtr_mode().tape_inserted:
+        logger.error('No tape inserted')
+        raise click.Abort()
     logger.debug('Rewinding tape')
     vcr.rewind_wait()
     logger.debug('Entering async')
@@ -210,4 +222,4 @@ def main(serial: str, audio_device: str, audio_device_name: str,
     sp.run(('wpctl', 'set-profile', audio_node_id, '1'), check=True)
     logger.debug('Rewinding tape')
     vcr.rewind_wait()
-    return ret
+    sys.exit(ret)
