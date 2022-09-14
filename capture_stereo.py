@@ -169,7 +169,6 @@ async def a_main(video_device: str, audio_device: str, length: int,
     # Waiting is required to avoid 'Loop that handles pid ... is closed'
     ffmpeg_proc_return = await ffmpeg_proc.wait()
     logger.debug(f'ffmpeg exited with code {ffmpeg_proc_return}')
-    # 255 is what subprocess sets after waiting after calling terminate(), not ffmpeg
     if ffmpeg_proc_return not in (0, 255):
         logger.warning('ffmpeg did not exit cleanly')
         return 1
