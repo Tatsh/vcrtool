@@ -122,7 +122,8 @@ async def a_main(video_device: str, audio_device: str, length: int,
                                                     '-o',
                                                     f'{output_base}.vbi',
                                                     stdout=asp.PIPE,
-                                                    stderr=asp.PIPE)
+                                                    stderr=asp.PIPE,
+                                                    stdin=asp.PIPE)
         logger.debug(f'zvbi2raw PID: {vbi_proc.pid}')
     else:
         logger.debug('VBI device not specified')
@@ -134,7 +135,8 @@ async def a_main(video_device: str, audio_device: str, length: int,
                                                          '-i',
                                                          str(input_index),
                                                          stdout=asp.PIPE,
-                                                         stderr=asp.PIPE)
+                                                         stderr=asp.PIPE,
+                                                         stdin=asp.PIPE)
     logger.debug(f'v4l2-ctl PID: {change_input_proc.pid}')
     await change_input_proc.wait()
     logger.debug(f'v4l2-ctl exited with code {change_input_proc.returncode}')
