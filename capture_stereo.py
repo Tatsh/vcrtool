@@ -194,10 +194,8 @@ async def _a_main(video_device: str, audio_device: str, length: int,
         except ProcessLookupError:
             pass
         logger.debug(
-            f'zvbi2raw exited with code {vbi_proc_return or vbi_proc.returncode}'
+            f'zvbi2raw exited with code {vbi_proc_return or vbi_proc.returncode}. Ignoring.'
         )
-        if (vbi_proc_return or vbi_proc.returncode) != 0:
-            logger.warning('vbi2raw did not complete successfully')
     return 0
 
 
