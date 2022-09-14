@@ -150,6 +150,16 @@ class PowerStateResponse(CommandResponse):
         super().__init__(resp)
         self.is_on = bool(resp[4])
 
+    def __repr__(self) -> str:
+        return (
+            '<PowerStateResponse '
+            f'checksum={hex(self.checksum)} '
+            f'is_on={self.is_on} '
+            f'return_data=[{", ".join(f"0x{n:02x}" for n in self.return_data[1:])}] '
+            f'status={str(self.status)}'
+            '>')
+
+
 
 class DeviceNameResponse(CommandResponse):
     def __init__(self, resp: bytes):
