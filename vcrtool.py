@@ -80,8 +80,8 @@ class VTRMode(enum.IntEnum):
     FF = 0b10
     NO_MODE = 0b1111
     PAUSE = 0b111
-    PLAY_BWD = 0b110
-    PLAY_FWD = 0b101
+    PLAY_BWD = 0b101
+    PLAY_FWD = 0b110
     REC = 0b1110
     REC_PAUSE = 0b1101
     REW = 0b11
