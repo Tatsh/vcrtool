@@ -1,7 +1,7 @@
 from os.path import splitext
 from shlex import quote
 from time import sleep
-from typing import Any, cast
+from typing import Any, NoReturn, cast
 import asyncio
 import asyncio.subprocess as asp
 import os
@@ -212,7 +212,7 @@ async def _a_main(video_device: str, audio_device: str, length: int,
 @click.argument('output')
 def main(serial: str, audio_device: str, audio_device_name: str,
          video_device: str, vbi_device: str | None, timespan: str | None,
-         output: str, input_index: int) -> int:
+         output: str, input_index: int) -> NoReturn:
     timespan_seconds = timeparse(timespan or DEFAULT_TIMESPAN)
     if not timespan_seconds:
         click.secho('Timespan is invalid.', file=sys.stderr)
