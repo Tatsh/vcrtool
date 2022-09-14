@@ -103,7 +103,9 @@ async def a_main(video_device: str, audio_device: str, length: int,
         '-t',
         str(length),
         output,
-        env=dict(FFREPORT=f'file={output_base}.log:level=40'))
+        env=dict(FFREPORT=f'file={output_base}.log:level=40'),
+        stdin=asp.PIPE)
+    logger.debug(f'ffmpeg PID: {ffmpeg_proc.pid}')
     vbi_proc = None
     if vbi_device:
         output_vbi = f'{output_base}.vbi'
@@ -121,6 +123,7 @@ async def a_main(video_device: str, audio_device: str, length: int,
                                                     f'{output_base}.vbi',
                                                     stdout=asp.PIPE,
                                                     stderr=asp.PIPE)
+        logger.debug(f'zvbi2raw PID: {vbi_proc.pid}')
     else:
         logger.debug('VBI device not specified')
     await a_debug_sleep(2)
@@ -132,6 +135,7 @@ async def a_main(video_device: str, audio_device: str, length: int,
                                                          str(input_index),
                                                          stdout=asp.PIPE,
                                                          stderr=asp.PIPE)
+    logger.debug(f'v4l2-ctl PID: {change_input_proc.pid}')
     await change_input_proc.wait()
     logger.debug(f'v4l2-ctl exited with code {change_input_proc.returncode}')
     if change_input_proc.returncode != 0:
@@ -161,20 +165,24 @@ async def a_main(video_device: str, audio_device: str, length: int,
         logger.info('Received keyboard interrupt. Terminating ffmpeg.')
         ffmpeg_proc.terminate()
     # Waiting is required to avoid 'Loop that handles pid ... is closed'
-    await ffmpeg_proc.wait()
-    logger.debug(f'ffmpeg exited with code {ffmpeg_proc.returncode}')
+    ffmpeg_proc_return = await ffmpeg_proc.wait()
+    logger.debug(f'ffmpeg exited with code {ffmpeg_proc_return}')
     # 255 is what subprocess sets after waiting after calling terminate(), not ffmpeg
-    if ffmpeg_proc.returncode not in (0, 255):
+    if ffmpeg_proc_return not in (0, 255):
         logger.warning('ffmpeg did not exit cleanly')
         return 1
+    vbi_proc_return = None
     if vbi_proc:
         try:
             logger.debug('Terminating zvbi2raw')
             vbi_proc.terminate()
+            vbi_proc_return = await vbi_proc.wait()
         except ProcessLookupError:
             pass
-        logger.debug(f'zvbi2raw exited with code {vbi_proc.returncode}')
-        if vbi_proc.returncode != 0:
+        logger.debug(
+            f'zvbi2raw exited with code {vbi_proc_return or vbi_proc.returncode}'
+        )
+        if (vbi_proc_return or vbi_proc.returncode) != 0:
             logger.warning('vbi2raw did not complete successfully')
     return 0
 
