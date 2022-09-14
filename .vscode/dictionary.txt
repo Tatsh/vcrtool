@@ -16,6 +16,7 @@ libx
 mypy
 ntsc
 paren
+psutil
 pycache
 pyrate
 pytimeparse
