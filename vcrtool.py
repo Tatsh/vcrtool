@@ -160,7 +160,6 @@ class PowerStateResponse(CommandResponse):
             '>')
 
 
-
 class DeviceNameResponse(CommandResponse):
     def __init__(self, resp: bytes):
         super().__init__(resp)
@@ -210,10 +209,10 @@ class JLIPHRSeriesVCR:
                 f'Checksum did not match. Expected {actual_checksum} but '
                 f'received {ret[10]}')
         status = ret[3] & 0b111
-        if (self._raise and
-            (status) not in (CommandStatus.COMMAND_ACCEPTED,
-                             CommandStatus.COMMAND_ACCEPTED_NOT_COMPLETE)):
-            raise ValueError(f'Command status: {status}')
+        if (self._raise and status
+                not in (CommandStatus.COMMAND_ACCEPTED,
+                        CommandStatus.COMMAND_ACCEPTED_NOT_COMPLETE)):
+            raise ValueError(f'Command status: {str(CommandStatus(status))}')
         return ret
 
     @limiter.ratelimit('serial', delay=True)
