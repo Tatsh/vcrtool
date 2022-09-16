@@ -22,6 +22,7 @@ toml = "^0.10.2"
 
 [tool.poetry.scripts]
 capture-stereo = 'capture_stereo:main'
+jlip-presence-check = 'jlip_presence_check:main'
 vcrtool = 'vcrtool:main'
 
 [build-system]
