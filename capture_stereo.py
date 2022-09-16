@@ -33,22 +33,37 @@ def _audio_device_is_available(audio_device: str) -> bool:
         text=True).stderr)
 
 
-def _get_pipewire_audio_device_node_id(name: str) -> str | None:
+def _get_pipewire_audio_device_node_id(
+        name: str) -> tuple[str | None, str | None]:
     logger.debug(f'Getting node ID for "{name}"')
+    if (m := re.match(r'^hw:(\d+),(\d+)$', name)):
+        card, device = m.groups()
+        logger.debug(f'card = {card}, device = {device}')
+        name = [
+            item
+            for item in _debug_sp_run(('udevadm', 'info', '--attribute-walk',
+                                       f'/dev/snd/pcmC{card}D{device}c'),
+                                      text=True,
+                                      capture_output=True,
+                                      check=True).stdout.splitlines()
+            if 'ATTRS{product}==' in item
+        ][0].split('"')[1]
+    else:
+        raise ValueError(f'Invalid ALSA device string: {name}')
     try:
         if (m := re.search(r'(\d+)$', [
-                item for item in sp.run(('wpctl', 'status'),
-                                        text=True,
-                                        capture_output=True,
-                                        check=True).stdout.splitlines()
+                item for item in _debug_sp_run(('wpctl', 'status'),
+                                               text=True,
+                                               capture_output=True,
+                                               check=True).stdout.splitlines()
                 if name in item
         ][0].split('.')[0])):
             logger.debug(f'Got node ID {m[0]}')
-            return m[0]
+            return name, m[0]
     except IndexError:
         pass
     logger.debug('Failed to get node ID')
-    return None
+    return None, None
 
 
 async def _a_debug_sleep(interval: int | float) -> None:
@@ -203,19 +218,19 @@ async def _a_main(video_device: str, audio_device: str, length: int,
 @click.option('-a', '--audio-device', required=True)
 @click.option('-b', '--vbi-device')
 @click.option('-i', '--input-index', default=2, type=int)
-@click.option('-n', '--audio-device-name', required=True)
 @click.option('-s', '--serial', required=True)
 @click.option('-t', '--timespan', default=DEFAULT_TIMESPAN)
 @click.option('-v', '--video-device', required=True)
 @click.argument('output')
-def main(serial: str, audio_device: str, audio_device_name: str,
-         video_device: str, vbi_device: str | None, timespan: str | None,
-         output: str, input_index: int) -> NoReturn:
+def main(serial: str, audio_device: str, video_device: str,
+         vbi_device: str | None, timespan: str | None, output: str,
+         input_index: int) -> NoReturn:
     timespan_seconds = timeparse(timespan or DEFAULT_TIMESPAN)
     if not timespan_seconds:
         click.secho('Timespan is invalid.', file=sys.stderr)
         raise click.Abort()
-    audio_node_id = _get_pipewire_audio_device_node_id(audio_device_name)
+    audio_device_name, audio_node_id = _get_pipewire_audio_device_node_id(
+        audio_device)
     if not audio_node_id:
         click.secho('Unable to find audio node ID.', file=sys.stderr)
         raise click.Abort()
