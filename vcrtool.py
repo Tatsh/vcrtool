@@ -1,5 +1,5 @@
 from time import sleep
-from typing import Any, NamedTuple, TypeVar
+from typing import Any, NamedTuple, Sequence, TypeVar
 import enum
 
 from pyrate_limiter import Duration, Limiter, RequestRate
@@ -31,10 +31,10 @@ def checksum(vals: list[int]) -> int:
     return sum_ & 0x7F
 
 
-def pad_right(value: Any, list_: list[T], max_length: int) -> list[T]:
+def pad_right(value: Any, list_: Sequence[T], max_length: int) -> list[T]:
     if (diff := max_length - len(list_)) < 0:
         raise ValueError(diff)
-    return list_ + (diff * [value])
+    return list(list_) + (diff * [value])
 
 
 class CommandStatus(enum.IntEnum):
