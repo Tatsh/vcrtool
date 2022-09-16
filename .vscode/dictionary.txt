@@ -25,6 +25,7 @@ rtscts
 secho
 setuptools
 timedelta
+udevadm
 udvare
 valign
 wpctl
