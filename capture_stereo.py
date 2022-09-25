@@ -1,7 +1,7 @@
 from os.path import splitext
 from shlex import quote
 from time import sleep
-from typing import Any, NoReturn, cast
+from typing import Any, Callable, NoReturn, ParamSpec, TextIO, TypeVar, cast
 import asyncio
 import asyncio.subprocess as asp
 import os
@@ -19,6 +19,28 @@ from vcrtool import JLIPHRSeriesVCR, VTRMode
 DEFAULT_TIMESPAN = '372m'
 THREAD_QUEUE_SIZE = 2048
 
+P = ParamSpec('P')
+T = TypeVar('T')
+C = TypeVar('C', bound=Callable)
+
+
+def take_annotation_from(
+    this: Callable[P,
+                   T | None]) -> Callable[[Callable], Callable[P, T | None]]:
+    def decorator(real_function: Callable) -> Callable[P, T | None]:
+        def new_function(*args: P.args, **kwargs: P.kwargs) -> T | None:
+            return cast(T | None, real_function(*args, **kwargs))
+
+        return new_function
+
+    return decorator
+
+
+@take_annotation_from(open)
+def open_for_writing(*args: Any, **kwargs: Any) -> TextIO:
+    kwargs['mode'] = 'w'
+    return cast(TextIO, open(*args, **kwargs))
+
 
 def _debug_sp_run(*args: Any, **kwargs: Any) -> sp.CompletedProcess[Any]:
     logger.debug(f'Executing: {" ".join(quote(x) for x in list(args[0]))}')
@@ -34,7 +56,7 @@ def _audio_device_is_available(audio_device: str) -> bool:
 
 
 def _get_pipewire_audio_device_node_id(
-        name: str) -> tuple[str | None, str | None]:
+        name: str) -> tuple[str, str] | tuple[None, None]:
     logger.debug(f'Getting node ID for "{name}"')
     if (m := re.match(r'^hw:(\d+),(\d+)$', name)):
         card, device = m.groups()
