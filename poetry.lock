@@ -146,11 +146,11 @@ pylint = ">=2.8.0"
 
 [[package]]
 name = "pyrate-limiter"
-version = "2.8.1"
+version = "2.8.2"
 description = "Python Rate-Limiter using Leaky-Bucket Algorithm"
 category = "main"
 optional = false
-python-versions = ">=3.6.2,<4.0.0"
+python-versions = ">=3.7,<4.0"
 
 [package.extras]
 all = ["filelock (>=3.0)", "redis (>=3.3,<4.0)", "redis-py-cluster (>=2.1.3,<3.0.0)"]
@@ -221,7 +221,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "1ceb966986dd71c2c63e34367001ce59ee05472b11271d1e053841759d9dda91"
+content-hash = "1543ef00d3763a5a792603aa61cd0fc8eb1af70c1f2cc7edfc34f536bd41c2a6"
 
 [metadata.files]
 astroid = [
@@ -338,7 +338,7 @@ pylint-quotes = [
     {file = "pylint_quotes-0.2.3-py2.py3-none-any.whl", hash = "sha256:89decd985d3c019314da630f5e3fe0e0df951c2310525fbd6e710bca329c810e"},
 ]
 pyrate-limiter = [
-    {file = "pyrate-limiter-2.8.1.tar.gz", hash = "sha256:0741b7db4b3facdce60bd836e0fcc43911bc52c443f674f924afba7e02e79c18"},
+    {file = "pyrate-limiter-2.8.2.tar.gz", hash = "sha256:083aa1732053e6b135487b8295989b7a24e7075964f076577422dfb3712be413"},
 ]
 pyserial = [
     {file = "pyserial-3.5-py2.py3-none-any.whl", hash = "sha256:c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"},
