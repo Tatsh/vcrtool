@@ -53,9 +53,9 @@ python-versions = ">=3.6.1,<4.0"
 
 [package.extras]
 colors = ["colorama (>=0.4.3,<0.5.0)"]
-pipfile_deprecated_finder = ["pipreqs", "requirementslib"]
+pipfile-deprecated-finder = ["pipreqs", "requirementslib"]
 plugins = ["setuptools"]
-requirements_deprecated_finder = ["pip-api", "pipreqs"]
+requirements-deprecated-finder = ["pip-api", "pipreqs"]
 
 [[package]]
 name = "lazy-object-proxy"
@@ -146,7 +146,7 @@ pylint = ">=2.8.0"
 
 [[package]]
 name = "pyrate-limiter"
-version = "2.8.2"
+version = "2.8.3"
 description = "Python Rate-Limiter using Leaky-Bucket Algorithm"
 category = "main"
 optional = false
@@ -221,7 +221,7 @@ python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,!=3.4.*,>=2.7"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.10"
-content-hash = "1543ef00d3763a5a792603aa61cd0fc8eb1af70c1f2cc7edfc34f536bd41c2a6"
+content-hash = "e52b82a7aeefc4ee20aefbf1438aa0253fefbf904bafb914bf147312a3a45407"
 
 [metadata.files]
 astroid = [
@@ -338,7 +338,7 @@ pylint-quotes = [
     {file = "pylint_quotes-0.2.3-py2.py3-none-any.whl", hash = "sha256:89decd985d3c019314da630f5e3fe0e0df951c2310525fbd6e710bca329c810e"},
 ]
 pyrate-limiter = [
-    {file = "pyrate-limiter-2.8.2.tar.gz", hash = "sha256:083aa1732053e6b135487b8295989b7a24e7075964f076577422dfb3712be413"},
+    {file = "pyrate_limiter-2.8.3.tar.gz", hash = "sha256:9f464ed01fa647d4d1f32ce27b8db9d594ab787847ec4ae72e1f5498756dd33d"},
 ]
 pyserial = [
     {file = "pyserial-3.5-py2.py3-none-any.whl", hash = "sha256:c4451db6ba391ca6ca299fb3ec7bae67a5c55dde170964c7a14ceefec02f2cf0"},
