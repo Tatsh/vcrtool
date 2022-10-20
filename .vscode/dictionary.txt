@@ -5,6 +5,8 @@ ehthumbs
 epub
 ffreport
 flac
+ftdi
+gpio
 ildct
 ilme
 jlip
@@ -18,6 +20,7 @@ ntsc
 paren
 psutil
 pycache
+pyftdi
 pyrate
 pytimeparse
 referer
