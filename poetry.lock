@@ -202,13 +202,13 @@ pylint = ">=2.8.0"
 
 [[package]]
 name = "pyrate-limiter"
-version = "3.1.1"
+version = "3.2.0"
 description = "Python Rate-Limiter using Leaky-Bucket Algorithm"
 optional = false
 python-versions = ">=3.8,<4.0"
 files = [
-    {file = "pyrate_limiter-3.1.1-py3-none-any.whl", hash = "sha256:c51906f1d51d56dc992ff6c26e8300e32151bc6cfa3e6559792e31971dfd4e2b"},
-    {file = "pyrate_limiter-3.1.1.tar.gz", hash = "sha256:2f57eda712687e6eccddf6afe8f8a15b409b97ed675fe64a626058f12863b7b7"},
+    {file = "pyrate_limiter-3.2.0-py3-none-any.whl", hash = "sha256:80465e5bb0cd212e4ff41ce5a380422209a89d62611b334f35273985c797432c"},
+    {file = "pyrate_limiter-3.2.0.tar.gz", hash = "sha256:e3f4d4d802d0bb377b8c3d840b081f5ec5d0494e9d7ffbcf58c2fd8c4d3d9e05"},
 ]
 
 [package.extras]
@@ -312,4 +312,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "4a3d7bd15108d9d39a4c85022ff7edfe49200ddec2967a7c806e917221680418"
+content-hash = "ac273ff645fb5a8cb08e4fb93c122d273760c20a2bb1b9f460bad55abb81c608"
