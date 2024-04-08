@@ -14,7 +14,7 @@ pyrate-limiter = "^3.6.0"
 pytimeparse = "^1.1.8"
 loguru = "^0.7.2"
 psutil = "^5.9.8"
-pyftdi = "^0.55.0"
+pyftdi = "^0.55.3"
 
 [tool.poetry.group.dev.dependencies]
 pylint = "^3.1.0"
