@@ -144,13 +144,13 @@ test = ["enum34", "ipaddress", "mock", "pywin32", "wmi"]
 
 [[package]]
 name = "pyftdi"
-version = "0.55.3"
+version = "0.55.4"
 description = "FTDI device driver (pure Python)"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "pyftdi-0.55.3-py3-none-any.whl", hash = "sha256:16ffe7a1bcf967f11288fe2d7222cebb1873dc047a9e0569bf25285c0f4eb395"},
-    {file = "pyftdi-0.55.3.tar.gz", hash = "sha256:b45ffa67befe5908514ba6f38f5f7f76928685a64c6d3b1bf1f3d88237f86dbb"},
+    {file = "pyftdi-0.55.4-py3-none-any.whl", hash = "sha256:64a804ea1c652e6935897df7867dbba18910848cad0a4927ccdb06813c072c85"},
+    {file = "pyftdi-0.55.4.tar.gz", hash = "sha256:cb2770b606507024a65e0a520bf892f239a36cec25cab45338ce3e3027de53c8"},
 ]
 
 [package.dependencies]
@@ -312,4 +312,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "557d84848d13b71923012bb3dbf2a2a96e97c89a92d9475a8ebe705b50d92aea"
+content-hash = "bbf42d32c5565d89ccf5d78cd34baea1c8b9518c02aa95e7c8e17baf400456ca"
