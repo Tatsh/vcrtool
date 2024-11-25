@@ -146,13 +146,12 @@ test = ["pytest", "pytest-xdist", "setuptools"]
 
 [[package]]
 name = "pyftdi"
-version = "0.55.4"
+version = "0.56.0"
 description = "FTDI device driver (pure Python)"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 files = [
-    {file = "pyftdi-0.55.4-py3-none-any.whl", hash = "sha256:64a804ea1c652e6935897df7867dbba18910848cad0a4927ccdb06813c072c85"},
-    {file = "pyftdi-0.55.4.tar.gz", hash = "sha256:cb2770b606507024a65e0a520bf892f239a36cec25cab45338ce3e3027de53c8"},
+    {file = "pyftdi-0.56.0-py3-none-any.whl", hash = "sha256:3ef0baadbf9031dde9d623ae66fac2d16ded36ce1b66c17765ca1944cb38b8b0"},
 ]
 
 [package.dependencies]
@@ -314,4 +313,4 @@ dev = ["black (>=19.3b0)", "pytest (>=4.6.2)"]
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.10"
-content-hash = "7c38105ddf67900fba48430657fac8aadbcbbe22f0bde1ff812260b3397ecc2e"
+content-hash = "fdaac17a42e83bdf81afe32556ee6cadc3f69b311f43bda743492030490ffacf"
