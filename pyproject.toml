@@ -17,7 +17,7 @@ psutil = "^7.0.0"
 pyftdi = "^0.56.0"
 
 [tool.poetry.group.dev.dependencies]
-pylint = "^3.3.4"
+pylint = "^3.3.6"
 pylint-quotes = "^0.2.3"
 toml = "^0.10.2"
 
