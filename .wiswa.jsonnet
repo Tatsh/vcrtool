@@ -6,7 +6,7 @@
   version: '0.0.0',
   want_main: true,
   citation+: {
-    'date-released': '2025-04-12',
+    'date-released': '2025-05-05',
   },
   pyproject+: {
     project+: {
@@ -20,17 +20,17 @@
     tool+: {
       poetry+: {
         dependencies+: {
-          pyserial: '^3.5',
           'pyrate-limiter': '^3.7.0',
-          pytimeparse2: '^1.7.1',
           psutil: '^7.0.0',
           pyftdi: '^0.56.0',
+          pyserial: '^3.5',
+          pytimeparse2: '^1.7.1',
         },
         group+: {
           dev+: {
             dependencies+: {
-              'types-pyserial': '^3.5.0.20250326',
               'types-psutil': '^7.0.0.20250401',
+              'types-pyserial': '^3.5.0.20250326',
             },
           },
         },
