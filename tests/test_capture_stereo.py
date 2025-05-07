@@ -3,7 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock, MagicMock
 
-from vcrtool.capture_stereo import VTRMode, _a_main, main  # noqa: PLC2701
+from vcrtool.capture_stereo import _a_main, main  # noqa: PLC2701
+from vcrtool.jlip import VTRMode
 import click
 import pytest
 

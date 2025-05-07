@@ -16,8 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 __all__ = ('JLIP', 'BandInfo', 'CommandResponse', 'CommandResponseTuple', 'CommandStatus',
-           'DeviceNameResponse', 'PowerStateResponse', 'VTRMode', 'VTRModeResponse',
-           'VTUModeResponse')
+           'DeviceNameResponse', 'PowerStateResponse', 'VTRMode', 'VTRModeResponse')
 
 
 class CommandStatus(enum.IntEnum):
