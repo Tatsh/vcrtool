@@ -1,20 +1,18 @@
 (import 'defaults.libjsonnet') + {
   // Project-specific
-  description: 'Control a JLIP or SIRC-enabled device like a VCR.',
+  description: 'Control a JLIP device such as a VCR.',
   keywords: ['command line', 'dvd', 'jlip', 'vcr', 'vhs'],
   project_name: 'vcrtool',
   version: '0.0.0',
   want_main: true,
   citation+: {
-    'date-released': '2025-05-05',
+    'date-released': '2025-05-07',
   },
   pyproject+: {
     project+: {
       scripts: {
         'capture-stereo': 'vcrtool.capture_stereo:main',
-        'jlip-presence-check': 'vcrtool.main:jlip_presence_check',
-        jlip: 'vcrtool.main:jlip_commands',
-        sircs: 'vcrtool.main:sircs',
+        jlip: 'vcrtool.main:jlip',
       },
     },
     tool+: {
@@ -31,6 +29,11 @@
             dependencies+: {
               'types-psutil': '^7.0.0.20250401',
               'types-pyserial': '^3.5.0.20250326',
+            },
+          },
+          tests+: {
+            dependencies+: {
+              'pytest-asyncio': '^0.26.0',
             },
           },
         },

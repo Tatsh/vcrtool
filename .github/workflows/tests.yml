@@ -36,5 +36,3 @@ name: 'Tests'
   push:
     branches:
       - 'master'
-permissions:
-  contents: read
