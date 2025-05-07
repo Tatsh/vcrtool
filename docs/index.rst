@@ -95,6 +95,7 @@ Example usage
       :caption: Contents:
 
       lib
+      notes
 
   Indices and tables
   ==================
