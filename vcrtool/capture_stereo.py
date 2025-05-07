@@ -1,8 +1,10 @@
+"""Tool to control a VCR and capture video, audio and VBI data."""
+# ruff: noqa: DOC501
 from __future__ import annotations
 
 from collections.abc import Callable
 from pathlib import Path
-from typing import Any, NoReturn, ParamSpec, TypeVar, cast
+from typing import Any, ParamSpec, TypeVar, cast
 import asyncio
 import asyncio.subprocess as asp
 import logging
@@ -13,9 +15,8 @@ from pytimeparse2 import parse as timeparse  # type: ignore[import-untyped]
 import click
 import psutil
 
+from .jlip import JLIP, VTRMode
 from .utils import (
-    JLIPHRSeriesVCR,
-    VTRMode,
     adebug_create_subprocess_exec,
     adebug_sleep,
     audio_device_is_available,
@@ -34,10 +35,10 @@ log = logging.getLogger(__name__)
 
 
 async def _a_main(video_device: str, audio_device: str, length: int, output: str, input_index: int,
-                  vbi_device: str | None, vcr: JLIPHRSeriesVCR) -> int:
-    log.debug('Starting ffmpeg')
+                  vbi_device: str | None, vcr: JLIP) -> int:
+    log.debug('Starting ffmpeg.')
     length = int(length) + 15
-    log.debug('Will record for %s seconds', length)
+    log.debug('Will record for %s seconds.', length)
     output_base = Path(output).stem
     ffmpeg_proc = await adebug_create_subprocess_exec(
         'ffmpeg',
@@ -83,7 +84,8 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
     if vbi_device:
         output_vbi = f'{output_base}.vbi'
         Path(output_vbi).unlink(missing_ok=True)
-        log.debug('Starting zvbi2raw with device %s and outputting to %s', vbi_device, output_vbi)
+        log.debug('Starting zvbi2raw with device `%s` and outputting to `%s`.', vbi_device,
+                  output_vbi)
         vbi_proc = await adebug_create_subprocess_exec('zvbi2raw',
                                                        '-d',
                                                        vbi_device,
@@ -94,9 +96,9 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
                                                        stdin=asp.PIPE)
         log.debug('zvbi2raw PID: %d', vbi_proc.pid)
     else:
-        log.debug('VBI device not specified')
+        log.debug('VBI device not specified.')
     await adebug_sleep(2)
-    log.debug('Setting device %s input to %s', video_device, input_index)
+    log.debug('Setting device `%s` input to `%s`.', video_device, input_index)
     change_input_proc = await adebug_create_subprocess_exec('v4l2-ctl',
                                                             '-d',
                                                             video_device,
@@ -107,15 +109,15 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
                                                             stdin=asp.PIPE)
     log.debug('v4l2-ctl PID: %d', change_input_proc.pid)
     await change_input_proc.wait()
-    log.debug('v4l2-ctl exited with code %d', change_input_proc.returncode)
+    log.debug('v4l2-ctl exited with code %d.', change_input_proc.returncode)
     if change_input_proc.returncode != 0:
         log.error('Failed to set input.')
         raise click.Abort
     await adebug_sleep(0.25)
-    log.debug('Resetting VCR counter')
+    log.debug('Resetting VCR counter.')
     vcr.reset_counter()
     await adebug_sleep(1)
-    log.debug('Starting VCR playback')
+    log.debug('Starting VCR playback.')
     vcr.play()
     ffmpeg_pid = ffmpeg_proc.pid
     try:
@@ -131,15 +133,15 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
         ffmpeg_proc.terminate()
     # Waiting is required to avoid 'Loop that handles pid ... is closed'
     ffmpeg_proc_return = await ffmpeg_proc.wait()
-    log.debug('ffmpeg exited with code %d', ffmpeg_proc_return)
+    log.debug('ffmpeg exited with code %d.', ffmpeg_proc_return)
     # ffmpeg always sets 255 if interrupted, but generally makes the file ready for use
     if ffmpeg_proc_return not in {0, 255}:
-        log.warning('ffmpeg did not exit cleanly')
+        log.warning('ffmpeg did not exit cleanly.')
         return 1
     vbi_proc_return = None
     if vbi_proc:
         try:
-            log.debug('Terminating zvbi2raw')
+            log.debug('Terminating zvbi2raw.')
             vbi_proc.terminate()
             vbi_proc_return = await vbi_proc.wait()
         except ProcessLookupError:
@@ -148,16 +150,22 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
     return 0
 
 
-@click.command()
-@click.option('-a', '--audio-device', required=True)
-@click.option('-b', '--vbi-device')
-@click.option('-i', '--input-index', default=2, type=int)
-@click.option('-s', '--serial', required=True)
-@click.option('-t', '--timespan', default=DEFAULT_TIMESPAN)
-@click.option('-v', '--video-device', required=True)
+@click.command(context_settings={'help_option_names': ['-h', '--help']})
+@click.option('-a', '--audio-device', required=True, help='ALSA device name.')
+@click.option('-b', '--vbi-device', help='VBI device path.')
+@click.option('-i', '--input-index', default=2, type=int, help='Input index for v4l2-ctl.')
+@click.option('-s', '--serial', required=True, help='Serial device path for JLIP.')
+@click.option('-t', '--timespan', default=DEFAULT_TIMESPAN, help='Timespan to record.')
+@click.option('-v', '--video-device', required=True, help='Video capture device path.')
 @click.argument('output')
 def main(serial: str, audio_device: str, video_device: str, vbi_device: str | None,
-         timespan: str | None, output: str, input_index: int) -> NoReturn:
+         timespan: str | None, output: str, input_index: int) -> None:
+    """
+    Capture video, stereo audio and VBI data from a JLIP VCR.
+
+    This command is highly-opinionated in capturing video. The most important functionality is to
+    capture VBI data. Audio is captured in FLAC format and video in H.265 format.
+    """
     timespan_seconds = timeparse(timespan or DEFAULT_TIMESPAN)
     if not timespan_seconds:
         click.secho('Timespan is invalid.', file=sys.stderr)
@@ -166,27 +174,29 @@ def main(serial: str, audio_device: str, video_device: str, vbi_device: str | No
     if not audio_node_id:
         click.secho('Unable to find audio node ID.', file=sys.stderr)
         raise click.Abort
-    log.debug('Setting Pipewire device "%s" to Off', audio_device_name)
+    log.debug('Setting Pipewire device "%s" to Off.', audio_device_name)
     sp.run(('wpctl', 'set-profile', audio_node_id, '0'), check=True)
     debug_sleep(0.1)
     if not audio_device_is_available(audio_device):
         click.secho('Cannot use audio device.', file=sys.stderr)
         raise click.Abort
-    vcr = JLIPHRSeriesVCR(serial)
-    log.debug('Turning VCR on')
+    vcr = JLIP(serial)
+    log.debug('Turning VCR on.')
     vcr.turn_on()
     if not vcr.get_vtr_mode().tape_inserted:
-        log.error('No tape inserted')
+        log.error('No tape inserted.')
         raise click.Abort
-    log.debug('Rewinding tape')
+    log.debug('Rewinding tape.')
     vcr.rewind_wait()
-    log.debug('Entering async')
+    log.debug('Entering async.')
     ret = asyncio.run(
         _a_main(video_device, audio_device, cast('int', timespan_seconds), output, input_index,
                 vbi_device, vcr))
-    log.debug('Exiting async')
-    log.debug('Setting Pipewire device "%s" to On', audio_device_name)
+    log.debug('Exiting async.')
+    log.debug('Setting Pipewire device "%s" to On.', audio_device_name)
     sp.run(('wpctl', 'set-profile', audio_node_id, '1'), check=True)
-    log.debug('Rewinding tape')
+    log.debug('Rewinding tape.')
     vcr.rewind_wait()
-    sys.exit(ret)
+    if ret != 0:
+        click.secho('Recording failed.', file=sys.stderr)
+        raise click.Abort

@@ -1,0 +1,240 @@
+.\" Man page generated from reStructuredText.
+.
+.
+.nr rst2man-indent-level 0
+.
+.de1 rstReportMargin
+\\$1 \\n[an-margin]
+level \\n[rst2man-indent-level]
+level margin: \\n[rst2man-indent\\n[rst2man-indent-level]]
+-
+\\n[rst2man-indent0]
+\\n[rst2man-indent1]
+\\n[rst2man-indent2]
+..
+.de1 INDENT
+.\" .rstReportMargin pre:
+. RS \\$1
+. nr rst2man-indent\\n[rst2man-indent-level] \\n[an-margin]
+. nr rst2man-indent-level +1
+.\" .rstReportMargin post:
+..
+.de UNINDENT
+. RE
+.\" indent \\n[an-margin]
+.\" old: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.nr rst2man-indent-level -1
+.\" new: \\n[rst2man-indent\\n[rst2man-indent-level]]
+.in \\n[rst2man-indent\\n[rst2man-indent-level]]u
+..
+.TH "VCRTOOL" "1" "May 07, 2025" "0.0.0" "vcrtool"
+.SH NAME
+vcrtool \- vcrtool v0.0.0
+.sp
+Control a JLIP device such as a VCR.
+.SH COMMANDS
+.SS jlip
+.sp
+Run JLIP commands.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.EX
+jlip [OPTIONS] SERIAL_DEVICE [ARGS]...
+.EE
+.UNINDENT
+.UNINDENT
+.sp
+Options
+.INDENT 0.0
+.TP
+.B \-d, \-\-debug
+Enable debug logging.
+.UNINDENT
+.sp
+Arguments
+.INDENT 0.0
+.TP
+.B SERIAL_DEVICE
+Required argument
+.UNINDENT
+.INDENT 0.0
+.TP
+.B ARGS
+Optional argument(s)
+.UNINDENT
+.sp
+The output is always JSON formatted.
+.SS Valid JLIP commands
+.sp
+All arguments to the commands are integers. Refer to JLIP documentation for valid values.
+.sp
+Most of these commands are specific to VCRs but many apply to other devices such as DVD players.
+.INDENT 0.0
+.IP \(bu 2
+\fBeject\-wait\fP: Eject the video and block until the video is ejected.
+.IP \(bu 2
+\fBeject\fP: Eject the video.
+.IP \(bu 2
+\fBfast\-forward\fP: Fast forward the video.
+.IP \(bu 2
+\fBfast\-play\-backward\fP: Fast rewind the video and play.
+.IP \(bu 2
+\fBfast\-play\-forward\fP: Fast forward the video and play.
+.IP \(bu 2
+\fBframe\-step\-back\fP: Step the video one frame backward.
+.IP \(bu 2
+\fBframe\-step\fP: Step the video one frame forward.
+.IP \(bu 2
+\fBget\-baud\-rate\-supported\fP: Get the baud rate supported by the device.
+.IP \(bu 2
+\fBget\-device\-code\fP: Get the device code.
+.IP \(bu 2
+\fBget\-device\-name\fP: Get the device name.
+.IP \(bu 2
+\fBget\-input\fP: Get the input.
+.IP \(bu 2
+\fBget\-machine\-code\fP: Get the machine code.
+.IP \(bu 2
+\fBget\-play\-speed\fP: Get the play speed.
+.IP \(bu 2
+\fBget\-power\-state\fP: Get the power state.
+.IP \(bu 2
+\fBget\-tuner\-mode\fP: Get the tuner mode.
+.IP \(bu 2
+\fBget\-vtr\fP: Get the VTR.
+.IP \(bu 2
+\fBnop\fP: No operation.
+.IP \(bu 2
+\fBpause\-recording\fP: Pause the recording.
+.IP \(bu 2
+\fBpause\fP: Pause the video.
+.IP \(bu 2
+\fBplay\fP: Play the video.
+.IP \(bu 2
+\fBpresence\-check\fP: Check if the device is connected.
+.IP \(bu 2
+\fBpreset\-channel\-down\fP: Navigate one channel down in preset channels.
+.IP \(bu 2
+\fBpreset\-channel\-up\fP: Navigate one channel up in preset channels.
+.IP \(bu 2
+\fBreal\-channel\-down\fP: Navigate one channel down.
+.IP \(bu 2
+\fBreal\-channel\-up\fP: Navigate one channel up.
+.IP \(bu 2
+\fBrecord\fP: Record to the media.
+.IP \(bu 2
+\fBrewind\fP: Rewind the video.
+.IP \(bu 2
+\fBselect\-band BAND\fP: Select the band.
+.IP \(bu 2
+\fBselect\-preset\-channel CHAN\fP: Select the preset channel.
+.IP \(bu 2
+\fBselect\-real\-channel CHAN\fP: Select the channel.
+.IP \(bu 2
+\fBsend\-command CMD ARG ...\fP: Send a custom command to the device.
+.IP \(bu 2
+\fBset\-channel CHAN\fP: Set the channel.
+.IP \(bu 2
+\fBset\-input N NN\fP: Set the input.
+.IP \(bu 2
+\fBset\-jlip\-id ID\fP: Set the JLIP ID.
+.IP \(bu 2
+\fBset\-record\-mode MODE\fP: Set the record mode.
+.IP \(bu 2
+\fBset\-record\-speed SPEED\fP: Set the record speed.
+.IP \(bu 2
+\fBslow\-play\-backward\fP: Slow rewind the video.
+.IP \(bu 2
+\fBslow\-play\-forward\fP: Slow forward the video.
+.IP \(bu 2
+\fBstop\fP: Stop the video.
+.IP \(bu 2
+\fBturn\-off\fP: Turn off the device.
+.IP \(bu 2
+\fBturn\-on\fP: Turn on the device.
+.UNINDENT
+.SS Example usage
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.EX
+# Check if device is connected.
+jlip /dev/ttyUSB0 presense\-check
+
+# Eject the video but do not block.
+jlip /dev/ttyUSB0 eject
+
+# Eject the video and block until the video is ejected.
+jlip /dev/ttyUSB0 eject\-wait
+
+# Fast forward the video.
+jlip /dev/ttyUSB0 fast\-forward
+
+# Rewind the video.
+jlip /dev/ttyUSB0 rewind
+
+# No operation.
+jlip /dev/ttyUSB0 nop
+.EE
+.UNINDENT
+.UNINDENT
+.SS capture\-stereo
+.sp
+Capture video, stereo audio and VBI data from a JLIP VCR.
+.sp
+This command is highly\-opinionated in capturing video. The most important functionality is to
+capture VBI data. Audio is captured in FLAC format and video in H.265 format.
+.INDENT 0.0
+.INDENT 3.5
+.sp
+.EX
+capture\-stereo [OPTIONS] OUTPUT
+.EE
+.UNINDENT
+.UNINDENT
+.sp
+Options
+.INDENT 0.0
+.TP
+.B \-a, \-\-audio\-device <audio_device>
+\fBRequired\fP ALSA device name.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-b, \-\-vbi\-device <vbi_device>
+VBI device path.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-i, \-\-input\-index <input_index>
+Input index for v4l2\-ctl.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-s, \-\-serial <serial>
+\fBRequired\fP Serial device path for JLIP.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-t, \-\-timespan <timespan>
+Timespan to record.
+.UNINDENT
+.INDENT 0.0
+.TP
+.B \-v, \-\-video\-device <video_device>
+\fBRequired\fP Video capture device path.
+.UNINDENT
+.sp
+Arguments
+.INDENT 0.0
+.TP
+.B OUTPUT
+Required argument
+.UNINDENT
+.SH AUTHOR
+Andrew Udvare <audvare@gmail.com>
+.SH COPYRIGHT
+2025
+.\" Generated by docutils manpage writer.
+.

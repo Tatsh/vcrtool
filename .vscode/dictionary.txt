@@ -1,6 +1,8 @@
 adebug
 alsa
+asyncio
 autodoc
+automodule
 codeowners
 colored
 colorlog
@@ -10,7 +12,6 @@ coveragerc
 datatable
 datatables
 debugpy
-devpath
 djlint
 doctrees
 eeyore
@@ -32,7 +33,6 @@ intersphinx
 isort
 jinja
 jlip
-jliphr
 jsonnet
 jsonschema
 levelname
@@ -76,6 +76,7 @@ sublicense
 superfast
 tatsh
 testpaths
+timecode
 timeparse
 toctree
 tryfirst

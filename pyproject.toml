@@ -14,7 +14,7 @@ classifiers = [
   "Programming Language :: Python :: 3.13",
   "Typing :: Typed",
 ]
-description = "Control a JLIP or SIRC-enabled device like a VCR."
+description = "Control a JLIP device such as a VCR."
 dynamic = ["dependencies", "requires-python"]
 keywords = ["command line", "dvd", "jlip", "vcr", "vhs"]
 license = "MIT"
@@ -28,9 +28,7 @@ name = "Andrew Udvare"
 
 [project.scripts]
 capture-stereo = "vcrtool.capture_stereo:main"
-jlip = "vcrtool.main:jlip_commands"
-jlip-presence-check = "vcrtool.main:jlip_presence_check"
-sircs = "vcrtool.main:sircs"
+jlip = "vcrtool.main:jlip"
 
 [project.urls]
 Issues = "https://github.com/Tatsh/vcrtool/issues"
@@ -141,6 +139,7 @@ optional = true
 [tool.poetry.group.tests.dependencies]
 mock = "^5.2.0"
 pytest = "^8.3.5"
+pytest-asyncio = "^0.26.0"
 pytest-cov = "^6.1.1"
 pytest-mock = "^3.14.0"
 
@@ -198,6 +197,7 @@ extend-select = [
   "CPY",
   "D",
   "DJ",
+  "DOC",
   "DTZ",
   "E",
   "EM",
@@ -205,6 +205,7 @@ extend-select = [
   "EXE",
   "F",
   "FA",
+  "FAST",
   "FBT",
   "FIX",
   "FLY",
@@ -236,11 +237,12 @@ extend-select = [
   "SLOT",
   "T10",
   "T20",
-  "TCH",
+  "TC",
   "TD",
   "TID",
   "TRY",
   "UP",
+  "W",
   "YTT",
 ]
 ignore = [
@@ -252,17 +254,10 @@ ignore = [
   "C901",
   "COM812",
   "CPY001",
-  "D100",
-  "D101",
-  "D102",
-  "D103",
-  "D104",
-  "D105",
-  "D106",
-  "D107",
   "D203",
   "D204",
   "D212",
+  "DOC201",
   "EM101",
   "N818",
   "PLR0912",
