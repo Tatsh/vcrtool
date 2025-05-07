@@ -3,7 +3,7 @@
   description: 'Control a JLIP device such as a VCR.',
   keywords: ['command line', 'dvd', 'jlip', 'vcr', 'vhs'],
   project_name: 'vcrtool',
-  version: '0.0.0',
+  version: '0.0.1',
   want_main: true,
   citation+: {
     'date-released': '2025-05-07',

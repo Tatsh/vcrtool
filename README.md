@@ -4,7 +4,7 @@
 [![PyPI - Version](https://img.shields.io/pypi/v/vcrtool)](https://pypi.org/project/vcrtool/)
 [![GitHub tag (with filter)](https://img.shields.io/github/v/tag/Tatsh/vcrtool)](https://github.com/Tatsh/vcrtool/tags)
 [![License](https://img.shields.io/github/license/Tatsh/vcrtool)](https://github.com/Tatsh/vcrtool/blob/master/LICENSE.txt)
-[![GitHub commits since latest release (by SemVer including pre-releases)](https://img.shields.io/github/commits-since/Tatsh/vcrtool/v0.0.0/master)](https://github.com/Tatsh/vcrtool/compare/v0.0.0...master)
+[![GitHub commits since latest release (by SemVer including pre-releases)](https://img.shields.io/github/commits-since/Tatsh/vcrtool/v0.0.1/master)](https://github.com/Tatsh/vcrtool/compare/v0.0.1...master)
 [![QA](https://github.com/Tatsh/vcrtool/actions/workflows/qa.yml/badge.svg)](https://github.com/Tatsh/vcrtool/actions/workflows/qa.yml)
 [![Tests](https://github.com/Tatsh/vcrtool/actions/workflows/tests.yml/badge.svg)](https://github.com/Tatsh/vcrtool/actions/workflows/tests.yml)
 [![Coverage Status](https://coveralls.io/repos/github/Tatsh/vcrtool/badge.svg?branch=master)](https://coveralls.io/github/Tatsh/vcrtool?branch=master)
