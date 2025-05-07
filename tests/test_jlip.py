@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
+import sys
 
 from vcrtool.jlip import (
     JLIP,
@@ -361,6 +362,7 @@ def test_send_command_base_invalid_checksum(jlip: MagicMock, mocker: MockerFixtu
     mock_checksum.assert_called_with([255, 255, 1, 3, 0, 0, 0, 0, 0, 0])
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_send_command_base_invalid_status(jlip: MagicMock, mocker: MockerFixture) -> None:
     mock_serial_write = mocker.patch.object(jlip.comm, 'write')
     mock_serial_read = mocker.patch.object(
@@ -501,6 +503,7 @@ def test_presence_check(jlip: MagicMock, mocker: MockerFixture) -> None:
     jlip.send_command.assert_called_once_with(0x7C, 0x4E, 0x20)
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_command_response_tuple_repr() -> None:
     response_tuple = CommandResponseTuple(jlip_id=1,
                                           command_status=CommandStatus.COMMAND_ACCEPTED,
@@ -511,6 +514,7 @@ def test_command_response_tuple_repr() -> None:
     assert repr(response_tuple) == expected_repr
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_command_response_repr() -> None:
     response = CommandResponse(checksum=0x7C,
                                raw=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C',
@@ -526,6 +530,7 @@ def test_command_response_repr() -> None:
     assert repr(response) == expected_repr
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_vtr_mode_response_repr() -> None:
     response = VTRModeResponse(checksum=0x7C,
                                raw=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C',
@@ -560,6 +565,7 @@ def test_vtr_mode_response_repr() -> None:
     assert repr(response) == expected_repr
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_vtu_mode_response_repr() -> None:
     response = VTUModeResponse(checksum=0x7C,
                                raw=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C',
@@ -585,6 +591,7 @@ def test_vtu_mode_response_repr() -> None:
     assert repr(response) == expected_repr
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_power_state_response_repr() -> None:
     response = PowerStateResponse(checksum=0x7C,
                                   raw=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C',
@@ -602,6 +609,7 @@ def test_power_state_response_repr() -> None:
     assert repr(response) == expected_repr
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_device_name_response_repr() -> None:
     response = DeviceNameResponse(checksum=0x7C,
                                   raw=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C',
@@ -619,6 +627,7 @@ def test_device_name_response_repr() -> None:
     assert repr(response) == expected_repr
 
 
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_jlip_repr(mocker: MockerFixture) -> None:
     mocker.patch('vcrtool.jlip.serial.Serial')
     jlip = JLIP(serial_path='/dev/ttyS0', jlip_id=1, raise_on_error_response=True)
