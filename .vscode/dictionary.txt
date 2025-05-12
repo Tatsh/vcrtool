@@ -3,6 +3,7 @@ alsa
 asyncio
 autodoc
 automodule
+bsky
 codeowners
 colored
 colorlog
