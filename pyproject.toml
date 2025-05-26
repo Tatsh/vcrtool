@@ -85,7 +85,7 @@ warn_unreachable = true
 include = ["man"]
 
 [tool.poetry.dependencies]
-click = "^8.2.0"
+click = "^8.2.1"
 colorlog = "^6.9.0"
 psutil = "^7.0.0"
 pyftdi = "^0.56.0"
