@@ -103,7 +103,7 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 commitizen = "^4.8.2"
 djlint = "^1.36.4"
-mypy = ">=1.12,<1.16"
+mypy = ">=1.12,<1.17"
 ruff = "^0.11.11"
 types-psutil = "^7.0.0.20250516"
 types-pyserial = "^3.5.0.20250326"
