@@ -27,7 +27,7 @@
         group+: {
           dev+: {
             dependencies+: {
-              'types-psutil': '^7.0.0.20250401',
+              'types-psutil': '^7.0.0.20250601',
               'types-pyserial': '^3.5.0.20250326',
             },
           },

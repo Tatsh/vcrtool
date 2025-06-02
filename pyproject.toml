@@ -4,9 +4,8 @@ requires = ["poetry-core"]
 
 [project]
 classifiers = [
-  "Development Status :: 2 - Pre-Alpha",
+  "Development Status :: 4 - Beta",
   "Intended Audience :: Developers",
-  "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
@@ -36,20 +35,18 @@ documentation = "https://vcrtool.readthedocs.org"
 homepage = "https://tatsh.github.io/vcrtool/"
 repository = "https://github.com/Tatsh/vcrtool"
 
-[tool]
-
 [tool.commitizen]
 tag_format = "v$version"
 version_files = [
   ".wiswa.jsonnet",
   "CITATION.cff",
   "README.md",
+  "docs/index.rst",
+  "man/vcrtool.1",
   "package.json",
   "vcrtool/__init__.py",
 ]
 version_provider = "pep621"
-
-[tool.coverage]
 
 [tool.coverage.report]
 exclude_also = ["if TYPE_CHECKING:"]
@@ -82,20 +79,18 @@ strict_optional = true
 warn_unreachable = true
 
 [tool.poetry]
-include = ["man"]
+include = ["man", { format = "sdist", path = "tests" }]
 
 [tool.poetry.dependencies]
 click = "^8.2.1"
 colorlog = "^6.9.0"
 psutil = "^7.0.0"
 pyftdi = "^0.56.0"
-pyrate-limiter = "^3.7.0"
+pyrate-limiter = "^3.7.1"
 pyserial = "^3.5"
 python = ">=3.10,<3.14"
 pytimeparse2 = "^1.7.1"
-typing-extensions = "^4.13.1"
-
-[tool.poetry.group]
+typing-extensions = "^4.14.0"
 
 [tool.poetry.group.dev]
 optional = true
@@ -103,9 +98,9 @@ optional = true
 [tool.poetry.group.dev.dependencies]
 commitizen = "^4.8.2"
 djlint = "^1.36.4"
-mypy = ">=1.12,<1.16"
+mypy = "^1.16.0"
 ruff = "^0.11.12"
-types-psutil = "^7.0.0.20250516"
+types-psutil = "^7.0.0.20250601"
 types-pyserial = "^3.5.0.20250326"
 yapf = "^0.43.0"
 
@@ -119,29 +114,32 @@ docutils = "^0.21.2"
 esbonio = "^0.16.5"
 numpydoc = "^1.8.0"
 restructuredtext-lint = "^1.4.0"
-sphinx = "<8.2.0"
 sphinx-click = "^6.0.0"
 sphinx-datatables = "^0.2.1"
 sphinx-hoverxref = "^1.4.2"
-sphinx-immaterial = "^0.13.4"
+sphinx-immaterial = "^0.13.5"
 
 [tool.poetry.group.docs.dependencies.enum-tools]
 extras = ["sphinx"]
-version = "^0.12.0"
+version = "^0.13.0"
 
-[tool.poetry.group.docs.dependencies.erdantic]
-optional = true
-version = "<2.0"
+[[tool.poetry.group.docs.dependencies.sphinx]]
+python = ">=3.11"
+version = "^8.2.0"
+
+[[tool.poetry.group.docs.dependencies.sphinx]]
+python = "<3.11"
+version = "^7.2.5"
 
 [tool.poetry.group.tests]
 optional = true
 
 [tool.poetry.group.tests.dependencies]
 mock = "^5.2.0"
-pytest = "^8.3.5"
-pytest-asyncio = "^0.26.0"
+pytest = "^8.4.0"
+pytest-asyncio = "^1.0.0"
 pytest-cov = "^6.1.1"
-pytest-mock = "^3.14.0"
+pytest-mock = "^3.14.1"
 
 [tool.poetry.group.tests.dependencies.coveralls]
 python = "<3.13"
@@ -165,8 +163,6 @@ reportShadowedImports = "error"
 reportUnnecessaryTypeIgnoreComment = "none"
 typeCheckingMode = "off"
 useLibraryCodeForTypes = false
-
-[tool.pytest]
 
 [tool.pytest.ini_options]
 mock_use_standalone_module = true

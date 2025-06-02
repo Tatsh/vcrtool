@@ -16,7 +16,6 @@ debugpy
 djlint
 doctrees
 eeyore
-erdantic
 esbenp
 esbonio
 excinfo
@@ -42,11 +41,8 @@ libjsonnet
 libx
 linters
 modindex
-multiline
 mypy
-noninfringement
 norecursedirs
-ntsc
 numpy
 numpydoc
 pipewire
@@ -69,11 +65,10 @@ resp
 rstcheck
 rtscts
 schemafile
+sdist
 secho
 sircs
 sphinxcontrib
-sublicense
-superfast
 tatsh
 testpaths
 timecode
