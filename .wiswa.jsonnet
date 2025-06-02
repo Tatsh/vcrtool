@@ -18,7 +18,7 @@
     tool+: {
       poetry+: {
         dependencies+: {
-          'pyrate-limiter': '^3.7.0',
+          'pyrate-limiter': '^3.7.1',
           psutil: '^7.0.0',
           pyftdi: '^0.56.0',
           pyserial: '^3.5',
