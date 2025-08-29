@@ -15,8 +15,7 @@ if TYPE_CHECKING:
     from collections.abc import Sequence
 
 __all__ = ('adebug_create_subprocess_exec', 'adebug_sleep', 'audio_device_is_available',
-           'debug_sleep', 'debug_sp_run', 'get_pipewire_audio_device_node_id', 'pad_right',
-           'setup_logging')
+           'debug_sleep', 'debug_sp_run', 'get_pipewire_audio_device_node_id', 'pad_right')
 
 log = logging.getLogger(__name__)
 
@@ -38,38 +37,6 @@ def pad_right(value: T, list_: Sequence[T], max_length: int) -> list[T]:
     if (diff := max_length - len(list_)) < 0:
         raise ValueError(diff)
     return list(list_) + (diff * [value])
-
-
-def setup_logging(*,
-                  debug: bool = False,
-                  force_color: bool = False,
-                  no_color: bool = False) -> None:  # pragma: no cover
-    """Set up logging configuration."""
-    logging.config.dictConfig({
-        'disable_existing_loggers': True,
-        'root': {
-            'level': 'DEBUG' if debug else 'INFO',
-            'handlers': ['console'],
-        },
-        'formatters': {
-            'default': {
-                '()': 'colorlog.ColoredFormatter',
-                'force_color': force_color,
-                'format': (
-                    '%(light_cyan)s%(asctime)s%(reset)s | %(log_color)s%(levelname)-8s%(reset)s | '
-                    '%(light_green)s%(name)s%(reset)s:%(light_red)s%(funcName)s%(reset)s:'
-                    '%(blue)s%(lineno)d%(reset)s - %(message)s'),
-                'no_color': no_color,
-            }
-        },
-        'handlers': {
-            'console': {
-                'class': 'colorlog.StreamHandler',
-                'formatter': 'default',
-            }
-        },
-        'version': 1
-    })
 
 
 def debug_sp_run(*args: Any, **kwargs: Any) -> sp.CompletedProcess[Any]:

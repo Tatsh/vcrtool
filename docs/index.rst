@@ -9,7 +9,7 @@ vcrtool
 
    .. image:: https://img.shields.io/pypi/v/vcrtool
       :target: https://pypi.org/project/vcrtool/
-      :alt: PyPI - Version
+      :alt: PyPI Version
 
    .. image:: https://img.shields.io/github/v/tag/Tatsh/vcrtool
       :target: https://github.com/Tatsh/vcrtool/tags
@@ -19,9 +19,13 @@ vcrtool
       :target: https://github.com/Tatsh/vcrtool/blob/master/LICENSE.txt
       :alt: License
 
-   .. image:: https://img.shields.io/github/commits-since/Tatsh/vcrtool/v0.0.0/master
-      :target: https://github.com/Tatsh/vcrtool/compare/v0.0.0...master
+   .. image:: https://img.shields.io/github/commits-since/Tatsh/vcrtool/v0.0.1/master
+      :target: https://github.com/Tatsh/vcrtool/compare/v0.0.1...master
       :alt: GitHub commits since latest release (by SemVer including pre-releases)
+
+   .. image:: https://github.com/Tatsh/vcrtool/actions/workflows/codeql.yml/badge.svg
+      :target: https://github.com/Tatsh/vcrtool/actions/workflows/codeql.yml
+      :alt: CodeQL
 
    .. image:: https://github.com/Tatsh/vcrtool/actions/workflows/qa.yml/badge.svg
       :target: https://github.com/Tatsh/vcrtool/actions/workflows/qa.yml

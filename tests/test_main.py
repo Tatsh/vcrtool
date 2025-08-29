@@ -52,4 +52,4 @@ def test_jlip_debug_logging(runner: CliRunner, mocker: MockerFixture) -> None:
     mock_instance.valid_command = mock_method
     result = runner.invoke(jlip, ['serial_device', 'valid-command', '--debug'])
     assert result.exit_code == 0
-    mock_setup_logging.assert_called_once_with(debug=True)
+    mock_setup_logging.assert_called_once_with(debug=True, loggers=mocker.ANY)

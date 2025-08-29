@@ -6,10 +6,10 @@ import dataclasses
 import inspect
 import json
 
+from bascom import setup_logging
 import click
 
 from .jlip import JLIP
-from .utils import setup_logging
 
 __all__ = ('jlip',)
 
@@ -26,7 +26,7 @@ VALID_COMMANDS = [
 @click.option('-d', '--debug', is_flag=True, help='Enable debug logging.')
 def jlip(serial_device: str, args: tuple[str, ...], *, debug: bool = False) -> None:
     """Run JLIP commands."""
-    setup_logging(debug=debug)
+    setup_logging(debug=debug, loggers={'vcrtool': {'handlers': ('console',), 'propagate': False}})
     try:
         command = args[0]
     except IndexError as e:

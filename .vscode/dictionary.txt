@@ -3,17 +3,19 @@ alsa
 asyncio
 autodoc
 automodule
+bascom
 bsky
 codeowners
 colored
-colorlog
 commitizen
 conftest
 coveragerc
+dataclasses
 datatable
 datatables
 debugpy
 djlint
+docstrings
 doctrees
 eeyore
 esbenp
@@ -31,6 +33,7 @@ ildct
 ilme
 intersphinx
 isort
+itertools
 jinja
 jlip
 jsonnet
@@ -42,6 +45,7 @@ libx
 linters
 modindex
 mypy
+namedtuples
 norecursedirs
 numpy
 numpydoc
@@ -54,6 +58,7 @@ pydantic
 pydocstyle
 pyftdi
 pylance
+pylint
 pyproject
 pyrate
 pyright

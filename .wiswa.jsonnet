@@ -8,6 +8,9 @@
   citation+: {
     'date-released': '2025-05-07',
   },
+  copilot: {
+    intro: 'vcrtool is a command line tool to control a JLIP device such as a VCR.',
+  },
   pyproject+: {
     project+: {
       scripts: {
@@ -20,7 +23,7 @@
         dependencies+: {
           'pyrate-limiter': '^3.7.1',
           psutil: '^7.0.0',
-          pyftdi: '^0.56.0',
+          pyftdi: '^0.57.1',
           pyserial: '^3.5',
           pytimeparse2: '^1.7.1',
         },
