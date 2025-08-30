@@ -14,3 +14,4 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 First version.
 
 [unreleased]: https://github.com/Tatsh/vcrtool/compare/v0.0.1...HEAD
+[0.0.1]: https://github.com/Tatsh/vcrtool/releases/tag/v0.0.1
