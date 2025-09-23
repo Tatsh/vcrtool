@@ -1,13 +1,11 @@
-(import 'defaults.libjsonnet') + {
-  // Project-specific
+local utils = import 'utils.libjsonnet';
+
+{
   description: 'Control a JLIP device such as a VCR.',
   keywords: ['command line', 'dvd', 'jlip', 'vcr', 'vhs'],
   project_name: 'vcrtool',
   version: '0.0.1',
   want_main: true,
-  citation+: {
-    'date-released': '2025-05-07',
-  },
   copilot: {
     intro: 'vcrtool is a command line tool to control a JLIP device such as a VCR.',
   },
@@ -21,44 +19,26 @@
     tool+: {
       poetry+: {
         dependencies+: {
-          'pyrate-limiter': '^3.7.1',
-          psutil: '^7.0.0',
-          pyftdi: '^0.57.1',
-          pyserial: '^3.5',
-          pytimeparse2: '^1.7.1',
+          'pyrate-limiter': utils.latestPypiPackageVersionCaret('pyrate-limiter'),
+          psutil: utils.latestPypiPackageVersionCaret('psutil'),
+          pyftdi: utils.latestPypiPackageVersionCaret('pyftdi'),
+          pyserial: utils.latestPypiPackageVersionCaret('pyserial'),
+          pytimeparse2: utils.latestPypiPackageVersionCaret('pytimeparse2'),
         },
         group+: {
           dev+: {
             dependencies+: {
-              'types-psutil': '^7.0.0.20250601',
-              'types-pyserial': '^3.5.0.20250326',
+              'types-psutil': utils.latestPypiPackageVersionCaret('types-psutil'),
+              'types-pyserial': utils.latestPypiPackageVersionCaret('types-pyserial'),
             },
           },
           tests+: {
             dependencies+: {
-              'pytest-asyncio': '^0.26.0',
+              'pytest-asyncio': utils.latestPypiPackageVersionCaret('pytest-asyncio'),
             },
           },
         },
       },
-    },
-  },
-  // Common
-  authors: [
-    {
-      'family-names': 'Udvare',
-      'given-names': 'Andrew',
-      email: 'audvare@gmail.com',
-      name: '%s %s' % [self['given-names'], self['family-names']],
-    },
-  ],
-  local funding_name = '%s2' % std.asciiLower(self.github_username),
-  github_username: 'Tatsh',
-  github+: {
-    funding+: {
-      ko_fi: funding_name,
-      liberapay: funding_name,
-      patreon: funding_name,
     },
   },
 }

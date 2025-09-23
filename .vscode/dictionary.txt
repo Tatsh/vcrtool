@@ -6,7 +6,6 @@ automodule
 bascom
 bsky
 codeowners
-colored
 commitizen
 conftest
 coveragerc
@@ -38,7 +37,6 @@ jinja
 jlip
 jsonnet
 jsonschema
-levelname
 lextudio
 libjsonnet
 libx
@@ -59,6 +57,7 @@ pydocstyle
 pyftdi
 pylance
 pylint
+pypi
 pyproject
 pyrate
 pyright
