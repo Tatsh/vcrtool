@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any, TypeVar
 import asyncio
 import asyncio.subprocess as asp
 import logging
-import logging.config
 import re
 import subprocess as sp
 

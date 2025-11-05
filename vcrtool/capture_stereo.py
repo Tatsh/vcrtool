@@ -12,6 +12,7 @@ import subprocess as sp
 import sys
 
 from pytimeparse2 import parse as timeparse  # type: ignore[import-untyped]
+import anyio
 import click
 import psutil
 
@@ -83,7 +84,7 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
     vbi_proc = None
     if vbi_device:
         output_vbi = f'{output_base}.vbi'
-        Path(output_vbi).unlink(missing_ok=True)
+        await anyio.Path(output_vbi).unlink(missing_ok=True)
         log.debug('Starting zvbi2raw with device `%s` and outputting to `%s`.', vbi_device,
                   output_vbi)
         vbi_proc = await adebug_create_subprocess_exec('zvbi2raw',
