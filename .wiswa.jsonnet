@@ -4,7 +4,7 @@ local utils = import 'utils.libjsonnet';
   description: 'Control a JLIP device such as a VCR.',
   keywords: ['command line', 'dvd', 'jlip', 'vcr', 'vhs'],
   project_name: 'vcrtool',
-  version: '0.0.1',
+  version: '0.0.2',
   want_main: true,
   copilot: {
     intro: 'vcrtool is a command line tool to control a JLIP device such as a VCR.',
