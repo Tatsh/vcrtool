@@ -33,7 +33,6 @@ foxundermoon
 ftdi
 genindex
 globaltoc
-hoverxref
 htmlcov
 ildct
 ilme
@@ -50,6 +49,7 @@ libera
 libjsonnet
 libx
 linters
+manylinux
 modindex
 mypy
 namedtuples
