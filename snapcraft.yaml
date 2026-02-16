@@ -1,0 +1,24 @@
+apps:
+  vcrtool:
+    command: 'bin/vcrtool'
+    plugs:
+      - 'home'
+      - 'network'
+      - 'network-bind'
+base: 'core24'
+confinement: 'strict'
+description: 'Control a JLIP device such as a VCR.'
+grade: 'stable'
+name: 'vcrtool'
+parts:
+  vcrtool:
+    plugin: 'poetry'
+    source: '.'
+    stage-packages: []
+platforms:
+  amd64:
+    build-on: 'amd64'
+  arm64:
+    build-on: 'arm64'
+summary: 'Control a JLIP device such as a VCR.'
+version: '0.0.2'
