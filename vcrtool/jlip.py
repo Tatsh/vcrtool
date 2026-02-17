@@ -6,7 +6,7 @@ from time import sleep
 from typing import TYPE_CHECKING
 import enum
 
-from pyrate_limiter import Duration, Limiter, Rate
+from pyrate_limiter import Duration, Limiter, Rate  # type: ignore[attr-defined]
 from typing_extensions import override
 import serial
 
