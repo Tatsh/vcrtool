@@ -77,6 +77,12 @@
         "options": {
           "parser": "json"
         }
+      },
+      {
+        "files": ["*.ksy"],
+        "options": {
+          "parser": "yaml"
+        }
       }
     ],
     "plugins": [
