@@ -47,6 +47,7 @@ launchable
 lextudio
 libera
 libjsonnet
+libsonnet
 libx
 linters
 manylinux
