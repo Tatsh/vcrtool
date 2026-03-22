@@ -9,6 +9,15 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+### Changed
+
+- Removed unnecessary `type: ignore[attr-defined]` comment from `pyrate_limiter` import now that the
+  upstream mypy issue is resolved.
+
+### Fixed
+
+- Fixed typo "exceed" to "exceeded" in `send_command` and `send_command_fast` docstrings.
+
 ## [0.0.2] - 2025-12-20
 
 ### Added

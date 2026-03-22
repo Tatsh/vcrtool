@@ -6,7 +6,7 @@ from time import sleep
 from typing import TYPE_CHECKING
 import enum
 
-from pyrate_limiter import Duration, Limiter, Rate  # type: ignore[attr-defined]
+from pyrate_limiter import Duration, Limiter, Rate
 from typing_extensions import override
 import serial
 
@@ -331,7 +331,7 @@ class JLIP:  # noqa: PLR0904
         Send a command at a slower rate limit.
 
         This will raise pyrate_limiter's :py:class:`pyrate_limiter.BucketFullException` if the rate
-        limit is exceed.
+        limit is exceeded.
         """
         limiter.try_acquire('command')
         return self.send_command_base(*args)
@@ -341,7 +341,7 @@ class JLIP:  # noqa: PLR0904
         Send a command with a faster rate limit.
 
         This will raise pyrate_limiter's :py:class:`pyrate_limiter.BucketFullException` if the rate
-        limit is exceed.
+        limit is exceeded.
         """
         fast_limiter.try_acquire('command_fast')
         return self.send_command_base(*args)
