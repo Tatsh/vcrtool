@@ -7,12 +7,19 @@ apps:
       - 'network-bind'
 base: 'core24'
 confinement: 'strict'
+contact: 'https://github.com/Tatsh/vcrtool/issues'
 description: 'Control a JLIP device such as a VCR.'
+donation: 'https://buymeacoffee.com/Tatsh'
 grade: 'stable'
+issues: 'https://github.com/Tatsh/vcrtool/issues'
+license: 'MIT'
 name: 'vcrtool'
 parts:
   vcrtool:
-    plugin: 'poetry'
+    build-packages: []
+    plugin: 'python'
+    python-packages:
+      - '.'
     source: '.'
     stage-packages: []
 platforms:
@@ -20,5 +27,8 @@ platforms:
     build-on: 'amd64'
   arm64:
     build-on: 'arm64'
+source-code: 'https://github.com/Tatsh/vcrtool'
 summary: 'Control a JLIP device such as a VCR.'
+title: 'vcrtool'
 version: '0.0.2'
+website: 'https://tatsh.github.io/vcrtool/'
