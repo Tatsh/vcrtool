@@ -32,6 +32,7 @@ doctrees
 dunder
 eeyore
 elif
+esac
 esbenp
 esbonio
 excinfo
@@ -98,9 +99,11 @@ pyproject
 pyrate
 pyserial
 pytest
+pythonhosted
 pytimeparse
 regen
 resp
+ripgreprc
 rstcheck
 rtscts
 schemafile
@@ -126,6 +129,7 @@ tomlkit
 tomllib
 tomlq
 tonumber
+tostring
 tryfirst
 ubyte
 udevadm

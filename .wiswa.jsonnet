@@ -9,6 +9,14 @@ local utils = import 'utils.libjsonnet';
   want_main: true,
   want_flatpak: true,
   publishing+: { flathub: 'sh.tat.vcrtool' },
+  flatpak+: { command: 'jlip' },
+  snapcraft+: {
+    apps+: {
+      vcrtool+: {
+        command: 'bin/jlip',
+      },
+    },
+  },
   pyproject+: {
     project+: {
       scripts: {
