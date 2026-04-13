@@ -1,6 +1,6 @@
 apps:
   vcrtool:
-    command: 'bin/jlip'
+    command: 'bin/vcrtool'
     plugs:
       - 'home'
       - 'network'

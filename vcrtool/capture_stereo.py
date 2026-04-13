@@ -1,4 +1,4 @@
-"""Tool to control a VCR and capture video, audio and VBI data."""
+"""Tool to control a VCR and capture video, audio, and VBI data."""
 # ruff: noqa: DOC501
 from __future__ import annotations
 
@@ -8,6 +8,7 @@ from typing import Any, ParamSpec, TypeVar, cast
 import asyncio
 import asyncio.subprocess as asp
 import logging
+import shutil
 import subprocess as sp
 import sys
 
@@ -162,7 +163,7 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
 def main(serial: str, audio_device: str, video_device: str, vbi_device: str | None,
          timespan: str | None, output: str, input_index: int) -> None:
     """
-    Capture video, stereo audio and VBI data from a JLIP VCR.
+    Capture video, stereo audio, and VBI data from a JLIP VCR.
 
     This command is highly-opinionated in capturing video. The most important functionality is to
     capture VBI data. Audio is captured in FLAC format and video in H.265 format.
@@ -171,12 +172,16 @@ def main(serial: str, audio_device: str, video_device: str, vbi_device: str | No
     if not timespan_seconds:
         click.secho('Timespan is invalid.', file=sys.stderr)
         raise click.Abort
+    wpctl = shutil.which('wpctl')
+    if not wpctl:
+        click.secho('wpctl not found.', file=sys.stderr)
+        raise click.Abort
     audio_device_name, audio_node_id = get_pipewire_audio_device_node_id(audio_device)
     if not audio_node_id:
         click.secho('Unable to find audio node ID.', file=sys.stderr)
         raise click.Abort
     log.debug('Setting Pipewire device "%s" to Off.', audio_device_name)
-    sp.run(('wpctl', 'set-profile', audio_node_id, '0'), check=True)
+    sp.run((wpctl, 'set-profile', audio_node_id, '0'), check=True)
     debug_sleep(0.1)
     if not audio_device_is_available(audio_device):
         click.secho('Cannot use audio device.', file=sys.stderr)
@@ -195,7 +200,7 @@ def main(serial: str, audio_device: str, video_device: str, vbi_device: str | No
                 vbi_device, vcr))
     log.debug('Exiting async.')
     log.debug('Setting Pipewire device "%s" to On.', audio_device_name)
-    sp.run(('wpctl', 'set-profile', audio_node_id, '1'), check=True)
+    sp.run((wpctl, 'set-profile', audio_node_id, '1'), check=True)
     log.debug('Rewinding tape.')
     vcr.rewind_wait()
     if ret != 0:

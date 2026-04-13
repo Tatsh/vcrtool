@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock, MagicMock
 
 from vcrtool.capture_stereo import _a_main, main  # noqa: PLC2701
@@ -9,8 +9,19 @@ import click
 import pytest
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from click.testing import CliRunner
     from pytest_mock import MockerFixture
+
+
+def _close_coroutine(ret: int = 0) -> Callable[..., int]:
+    def _side_effect(coro: object, **_: object) -> int:
+        if hasattr(coro, 'close'):
+            cast('Any', coro).close()
+        return ret
+
+    return _side_effect
 
 
 @pytest.mark.asyncio
@@ -59,6 +70,7 @@ async def test_a_main_vbi_device(mocker: MockerFixture) -> None:
     mock_ffmpeg_proc.pid = 1234
     mock_ffmpeg_proc.wait = AsyncMock(return_value=0)
     mock_vbi_proc = AsyncMock()
+    mock_vbi_proc.terminate = MagicMock()
     mock_vbi_proc.wait = AsyncMock(return_value=0)
     mocker.patch('vcrtool.capture_stereo.adebug_create_subprocess_exec',
                  side_effect=[mock_ffmpeg_proc, mock_vbi_proc, mock_v4l2_ctl_proc])
@@ -89,6 +101,7 @@ async def test_a_main_vcr_not_playing(mocker: MockerFixture) -> None:
     mock_v4l2_ctl_proc.wait = AsyncMock(return_value=0)
     mock_ffmpeg_proc = AsyncMock()
     mock_ffmpeg_proc.pid = 1234
+    mock_ffmpeg_proc.terminate = MagicMock()
     mock_ffmpeg_proc.wait = AsyncMock(return_value=0)
     mocker.patch('vcrtool.capture_stereo.adebug_create_subprocess_exec',
                  side_effect=[mock_ffmpeg_proc, mock_v4l2_ctl_proc])
@@ -178,6 +191,7 @@ async def test_a_main_keyboard_interrupt(mocker: MockerFixture) -> None:
     mock_v4l2_ctl_proc.wait = AsyncMock(return_value=0)
     mock_ffmpeg_proc = AsyncMock()
     mock_ffmpeg_proc.pid = 1234
+    mock_ffmpeg_proc.terminate = MagicMock()
     mock_ffmpeg_proc.wait = AsyncMock(return_value=0)
     mocker.patch('vcrtool.capture_stereo.adebug_create_subprocess_exec',
                  side_effect=[mock_ffmpeg_proc, mock_v4l2_ctl_proc])
@@ -248,12 +262,13 @@ def test_main_success(mocker: MockerFixture, runner: CliRunner, args: list[str],
     mocker.patch('vcrtool.capture_stereo.audio_device_is_available', return_value=True)
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
     mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=True)
     mock_vcr_instance.rewind_wait = MagicMock()
     mock_vcr_instance.turn_on = MagicMock()
-    mocker.patch('vcrtool.capture_stereo.asyncio.run', return_value=0)
+    mocker.patch('vcrtool.capture_stereo.asyncio.run', side_effect=_close_coroutine(0))
 
     result = runner.invoke(main, args)
 
@@ -269,6 +284,7 @@ def test_main_no_tape_inserted(mocker: MockerFixture, runner: CliRunner) -> None
     mocker.patch('vcrtool.capture_stereo.audio_device_is_available', return_value=True)
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
     mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=False)
@@ -287,6 +303,7 @@ def test_main_audio_device_unavailable(mocker: MockerFixture, runner: CliRunner)
     mocker.patch('vcrtool.capture_stereo.audio_device_is_available', return_value=False)
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
     result = runner.invoke(main,
                            ['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'])
     assert result.exit_code == 1
@@ -298,10 +315,42 @@ def test_main_audio_node_id_not_found(mocker: MockerFixture, runner: CliRunner) 
     mocker.patch('vcrtool.capture_stereo.audio_device_is_available', return_value=True)
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
     result = runner.invoke(main,
                            ['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'])
     assert result.exit_code == 1
     assert 'Unable to find audio node ID.' in result.output
+
+
+def test_main_wpctl_not_found(mocker: MockerFixture, runner: CliRunner) -> None:
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value=None)
+    result = runner.invoke(main,
+                           ['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'])
+    assert result.exit_code == 1
+    assert 'wpctl not found.' in result.output
+
+
+def test_main_wpctl_resolved_path_used(mocker: MockerFixture, runner: CliRunner) -> None:
+    mocker.patch('vcrtool.capture_stereo.get_pipewire_audio_device_node_id',
+                 return_value=('audio_device_name', 'audio_node_id'))
+    mocker.patch('vcrtool.capture_stereo.audio_device_is_available', return_value=True)
+    mock_sp_run = mocker.patch('vcrtool.capture_stereo.sp.run')
+    mocker.patch('vcrtool.capture_stereo.debug_sleep')
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
+    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
+    mock_vcr_instance = mock_vcr.return_value
+    mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=True)
+    mock_vcr_instance.rewind_wait = MagicMock()
+    mock_vcr_instance.turn_on = MagicMock()
+    mocker.patch('vcrtool.capture_stereo.asyncio.run', side_effect=_close_coroutine(0))
+
+    result = runner.invoke(main,
+                           ['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'])
+
+    assert result.exit_code == 0
+    assert mock_sp_run.call_count == 2
+    mock_sp_run.assert_any_call(('/usr/bin/wpctl', 'set-profile', 'audio_node_id', '0'), check=True)
+    mock_sp_run.assert_any_call(('/usr/bin/wpctl', 'set-profile', 'audio_node_id', '1'), check=True)
 
 
 def test_main_recording_failed(mocker: MockerFixture, runner: CliRunner) -> None:
@@ -310,12 +359,13 @@ def test_main_recording_failed(mocker: MockerFixture, runner: CliRunner) -> None
     mocker.patch('vcrtool.capture_stereo.audio_device_is_available', return_value=True)
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
+    mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
     mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=True)
     mock_vcr_instance.rewind_wait = MagicMock()
     mock_vcr_instance.turn_on = MagicMock()
-    mocker.patch('vcrtool.capture_stereo.asyncio.run', return_value=1)  # Simulate recording failure
+    mocker.patch('vcrtool.capture_stereo.asyncio.run', side_effect=_close_coroutine(1))
 
     result = runner.invoke(main,
                            ['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'])

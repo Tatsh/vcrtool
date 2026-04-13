@@ -1,6 +1,7 @@
 adebug
 alsa
 anchore
+Ångström
 anyio
 appdir
 appimage
@@ -11,9 +12,12 @@ automodule
 bascom
 bsky
 cdrommsf
+codesign
 colorlog
 commitizen
 conftest
+cooldown
+coro
 coveragerc
 coverallsapp
 ctypes
@@ -23,8 +27,8 @@ datatable
 datatables
 debugpy
 docstrings
+doctree
 doctrees
-dorny
 dunder
 eeyore
 elif
@@ -33,7 +37,7 @@ esbonio
 excinfo
 ffreport
 filevers
-fontawesome
+flathub
 foxundermoon
 ftdi
 functools
@@ -46,10 +50,12 @@ ilme
 intersphinx
 isort
 itertools
+jinja
 jlip
 jsonnet
 jsonschema
 kwargs
+lastexitcode
 launchable
 lextudio
 libera
@@ -65,6 +71,8 @@ myproject
 mypy
 namedtuples
 norecursedirs
+notarytool
+npmjs
 numpy
 numpydoc
 onefile
@@ -83,6 +91,7 @@ pydocstyle
 pyftdi
 pyinstaller
 pylint
+pylock
 pypa
 pypi
 pyproject
@@ -95,10 +104,12 @@ resp
 rstcheck
 rtscts
 schemafile
+sdist
 secho
 setattr
 shellcheck
 shellformat
+signtool
 sircs
 snapcore
 snapcraft
@@ -125,9 +136,10 @@ venv
 vers
 virtualenv
 wiswa
+wiswa's
 wpctl
+xcrun
 yapf
 yapfignore
 yarnrc
 zvbi
-ångström

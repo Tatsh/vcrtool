@@ -62,7 +62,19 @@ class CommandResponse:
     """Lower-level command response information."""
     @staticmethod
     def from_bytes(resp: bytes) -> CommandResponse:
-        """Initialise from bytes."""
+        """
+        Initialise from bytes.
+
+        Parameters
+        ----------
+        resp : bytes
+            Raw response bytes.
+
+        Returns
+        -------
+        CommandResponse
+            Parsed command response.
+        """
         return CommandResponse(
             resp[10], resp, resp[3:10], CommandStatus(resp[3] & 0b111),
             CommandResponseTuple(resp[2], CommandStatus(resp[3] & 0b111), resp[4:10]))
@@ -134,7 +146,19 @@ class VTRModeResponse(CommandResponse):
     @override
     @staticmethod
     def from_bytes(resp: bytes) -> VTRModeResponse:
-        """Initialise from bytes."""
+        """
+        Initialise from bytes.
+
+        Parameters
+        ----------
+        resp : bytes
+            Raw response bytes.
+
+        Returns
+        -------
+        VTRModeResponse
+            Parsed VTR mode response.
+        """
         parent = CommandResponse.from_bytes(resp)
         framerate = PAL_FRAMERATE if ((resp[5] >> 2) & 1) == 1 else NTSC_FRAMERATE
         return VTRModeResponse(parent.checksum,
@@ -174,7 +198,7 @@ BANK_NUMBER_NONE = 0x51
 
 @dataclass
 class VTUModeResponse(CommandResponse):
-    """VTR mode response information."""
+    """VTU mode response information."""
     band_info: BandInfo
     """Band information."""
     bank_number: int | None
@@ -216,6 +240,19 @@ class PowerStateResponse(CommandResponse):
     @staticmethod
     @override
     def from_bytes(resp: bytes) -> PowerStateResponse:
+        """
+        Initialise from bytes.
+
+        Parameters
+        ----------
+        resp : bytes
+            Raw response bytes.
+
+        Returns
+        -------
+        PowerStateResponse
+            Parsed power state response.
+        """
         parent = CommandResponse.from_bytes(resp)
         return PowerStateResponse(parent.checksum, parent.raw, parent.return_data, parent.status,
                                   parent.tuple, bool(resp[4]))
@@ -238,7 +275,19 @@ class DeviceNameResponse(CommandResponse):
     @staticmethod
     @override
     def from_bytes(resp: bytes) -> DeviceNameResponse:
-        """Initialise from bytes."""
+        """
+        Initialise from bytes.
+
+        Parameters
+        ----------
+        resp : bytes
+            Raw response bytes.
+
+        Returns
+        -------
+        DeviceNameResponse
+            Parsed device name response.
+        """
         parent = CommandResponse.from_bytes(resp)
         return DeviceNameResponse(parent.checksum, parent.raw, parent.return_data, parent.status,
                                   parent.tuple, ''.join(chr(x) for x in parent.return_data[1:]))
@@ -254,7 +303,19 @@ class DeviceNameResponse(CommandResponse):
 
 
 def checksum(vals: Sequence[int]) -> int:
-    """Checksum for JLIP commands."""
+    """
+    Checksum for JLIP commands.
+
+    Parameters
+    ----------
+    vals : Sequence[int]
+        Values to checksum.
+
+    Returns
+    -------
+    int
+        Computed checksum.
+    """
     sum_ = 0x80
     for i in range(10):
         sum_ -= (vals[i] & 0x7F)
@@ -305,6 +366,16 @@ class JLIP:  # noqa: PLR0904
         """
         Send a command (base method).
 
+        Parameters
+        ----------
+        *args : int
+            Command bytes to send.
+
+        Returns
+        -------
+        bytes
+            Raw response bytes.
+
         Raises
         ------
         ValueError
@@ -332,6 +403,16 @@ class JLIP:  # noqa: PLR0904
 
         This will raise pyrate_limiter's :py:class:`pyrate_limiter.BucketFullException` if the rate
         limit is exceeded.
+
+        Parameters
+        ----------
+        *args : int
+            Command bytes to send.
+
+        Returns
+        -------
+        bytes
+            Raw response bytes.
         """
         limiter.try_acquire('command')
         return self.send_command_base(*args)
@@ -342,16 +423,40 @@ class JLIP:  # noqa: PLR0904
 
         This will raise pyrate_limiter's :py:class:`pyrate_limiter.BucketFullException` if the rate
         limit is exceeded.
+
+        Parameters
+        ----------
+        *args : int
+            Command bytes to send.
+
+        Returns
+        -------
+        bytes
+            Raw response bytes.
         """
         fast_limiter.try_acquire('command_fast')
         return self.send_command_base(*args)
 
     def eject(self) -> CommandResponse:
-        """Eject the tape."""
+        """
+        Eject the tape.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x41, 0x60))
 
     def eject_wait(self) -> CommandResponse:
-        """Eject the tape and wait until it is done."""
+        """
+        Eject the tape and wait until it is done.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         resp = self.stop()
         sleep(0.5)
         resp = self.eject()
@@ -360,23 +465,58 @@ class JLIP:  # noqa: PLR0904
         return resp
 
     def fast_forward(self) -> CommandResponse:
-        """Fast forward the tape."""
+        """
+        Fast forward the tape.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x44, 0x75))
 
     def fast_play_forward(self) -> CommandResponse:
-        """Fast play forward."""
+        """
+        Fast play forward.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x43, 0x21))
 
     def fast_play_backward(self) -> CommandResponse:
-        """Fast play backward."""
+        """
+        Fast play backward.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x43, 0x25))
 
     def frame_step(self) -> CommandResponse:
-        """Move forward one frame."""
+        """
+        Move forward one frame.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x48, 0x46, 0x75, 0x01))
 
     def frame_step_back(self) -> CommandResponse:
-        """Move back one frame."""
+        """
+        Move back one frame.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x48, 0x46, 0x65, 0x01))
 
     def get_baud_rate_supported(self) -> CommandResponse:
@@ -384,23 +524,56 @@ class JLIP:  # noqa: PLR0904
         Get the baud rate supported by the device.
 
         ``0x21`` is returned, meaning 19200 baud, but this cannot be trusted.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
         """
         return CommandResponse.from_bytes(self.send_command(0x7C, 0x48, 0x20))
 
     def get_device_code(self) -> CommandResponse:
-        """Get the device code."""
+        """
+        Get the device code.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x7C, 0x49))
 
     def get_device_name(self) -> CommandResponse:
-        """Get the device name."""
+        """
+        Get the device name.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return DeviceNameResponse.from_bytes(self.send_command(0x7C, 0x4C))
 
     def get_input(self) -> CommandResponse:
-        """Get the input of the device."""
+        """
+        Get the input of the device.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x58, 0x20))
 
     def get_machine_code(self) -> CommandResponse:
-        """Get the machine code."""
+        """
+        Get the machine code.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x7C, 0x45))
 
     def get_play_speed(self) -> CommandResponse:
@@ -414,72 +587,194 @@ class JLIP:  # noqa: PLR0904
         - ``0x75`` means normal.
         - ``0x77`` means playing forward quickly.
         - ``0x7F`` is returned when inapplicable.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
         """
         return CommandResponse.from_bytes(self.send_command(0x48, 0x4E, 0x20))
 
     def get_power_state(self) -> PowerStateResponse:
-        """Get the power state of the device."""
+        """
+        Get the power state of the device.
+
+        Returns
+        -------
+        PowerStateResponse
+            Power state response.
+        """
         return PowerStateResponse.from_bytes(self.send_command(0x3E, 0x4E, 0x20))
 
     def get_tuner_mode(self) -> VTUModeResponse:
-        """Get the tuner mode."""
+        """
+        Get the tuner mode.
+
+        Returns
+        -------
+        VTUModeResponse
+            Tuner mode response.
+        """
         return VTUModeResponse.from_bytes(self.send_command(0xA, 0x4E, 0x20))
 
     def get_vtr_mode(self, *, fast: bool = False) -> VTRModeResponse:
-        """Get the VTR mode."""
+        """
+        Get the VTR mode.
+
+        Parameters
+        ----------
+        fast : bool
+            Use faster rate limit.
+
+        Returns
+        -------
+        VTRModeResponse
+            VTR mode response.
+        """
         return VTRModeResponse.from_bytes(
             (self.send_command_fast if fast else self.send_command)(0x08, 0x4E, 0x20))
 
     def nop(self) -> CommandResponse:
-        """No operation command."""
+        """
+        No operation command.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x7c, 0x4e, 0x20))
 
     def pause(self) -> CommandResponse:
-        """Pause playback."""
+        """
+        Pause playback.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x43, 0x6d))
 
     def pause_recording(self) -> CommandResponse:
-        """Pause recording."""
+        """
+        Pause recording.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x42, 0x6d))
 
     def play(self) -> CommandResponse:
-        """Start playback."""
+        """
+        Start playback.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x43, 0x75))
 
     def presence_check(self) -> CommandResponse:
-        """Check if the device is present and responding."""
+        """
+        Check if the device is present and responding.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x7C, 0x4E, 0x20))
 
     def preset_channel_up(self) -> CommandResponse:
-        """Change to the next preset channel."""
+        """
+        Change to the next preset channel.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x44, 0x73, 0, 0, 0x7E))
 
     def preset_channel_down(self) -> CommandResponse:
-        """Change to the previous preset channel."""
+        """
+        Change to the previous preset channel.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x44, 0x63, 0, 0, 0x7E))
 
     def real_channel_down(self) -> CommandResponse:
-        """Change to the previous channel."""
+        """
+        Change to the previous channel.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x42, 0x63, 0, 0, 0x44))
 
     def real_channel_up(self) -> CommandResponse:
-        """Change to the next channel."""
+        """
+        Change to the next channel.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x42, 0x73, 0, 0, 0x44))
 
     def record(self) -> CommandResponse:
-        """Start recording."""
+        """
+        Start recording.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x42, 0x70))
 
     def reset_counter(self) -> CommandResponse:
-        """Reset the timecode counter."""
+        """
+        Reset the timecode counter.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x48, 0x4D, 0x20))
 
     def rewind(self) -> CommandResponse:
-        """Rewind the tape."""
+        """
+        Rewind the tape.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x44, 0x65))
 
     def rewind_wait(self) -> CommandResponse:
-        """Rewind the tape and wait until it is done."""
+        """
+        Rewind the tape and wait until it is done.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         resp = self.stop()
         sleep(1)
         resp = self.rewind()
@@ -488,12 +783,34 @@ class JLIP:  # noqa: PLR0904
         return resp
 
     def set_channel(self, channel: int) -> CommandResponse:
-        """Set the channel to a specific value."""
+        """
+        Set the channel to a specific value.
+
+        Parameters
+        ----------
+        channel : int
+            Channel number.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0a, 0x44, 0x71, 0, channel, 0x7E))
 
     def set_jlip_id(self, n: int) -> CommandResponse:
         """
         Set the JLIP ID of the device.
+
+        Parameters
+        ----------
+        n : int
+            JLIP ID to set (1-99).
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
 
         Raises
         ------
@@ -506,47 +823,164 @@ class JLIP:  # noqa: PLR0904
         return CommandResponse.from_bytes(self.send_command(0x7C, 0x41, n))
 
     def set_input(self, n: int, nn: int) -> CommandResponse:
-        """Set the input to a specific value."""
+        """
+        Set the input to a specific value.
+
+        Parameters
+        ----------
+        n : int
+            Input number.
+        nn : int
+            Input sub-number.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x59, n, nn, 0x7F))
 
     def set_record_mode(self, n: int) -> CommandResponse:
-        """Set the recording mode."""
+        """
+        Set the recording mode.
+
+        Parameters
+        ----------
+        n : int
+            Record mode value.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x48, 0x43, n))
 
     def set_record_speed(self, n: int) -> CommandResponse:
-        """Set the recording speed."""
+        """
+        Set the recording speed.
+
+        Parameters
+        ----------
+        n : int
+            Record speed value.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x48, 0x42, n))
 
     def select_band(self, n: int) -> CommandResponse:
-        """Select a band."""
+        """
+        Select a band.
+
+        Parameters
+        ----------
+        n : int
+            Band value.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x40, 0x71, n))
 
     def select_preset_channel(self, n: int, nn: int, nnn: int) -> CommandResponse:
-        """Select a preset channel."""
+        """
+        Select a preset channel.
+
+        Parameters
+        ----------
+        n : int
+            First channel parameter.
+        nn : int
+            Second channel parameter.
+        nnn : int
+            Third channel parameter.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x44, n, nn, nnn, 0x7E))
 
     def select_real_channel(self, n: int, nn: int, nnn: int) -> CommandResponse:
-        """Select a channel."""
+        """
+        Select a channel.
+
+        Parameters
+        ----------
+        n : int
+            First channel parameter.
+        nn : int
+            Second channel parameter.
+        nnn : int
+            Third channel parameter.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x0A, 0x42, n, nn, nnn, 0x44))
 
     def slow_play_backward(self) -> CommandResponse:
-        """Slow play backward."""
+        """
+        Slow play backward.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x43, 0x24))
 
     def slow_play_forward(self) -> CommandResponse:
-        """Slow play forward."""
+        """
+        Slow play forward.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x43, 0x20))
 
     def stop(self) -> CommandResponse:
-        """Stop playback or recording."""
+        """
+        Stop playback or recording.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x08, 0x44, 0x60))
 
     def turn_off(self) -> CommandResponse:
-        """Turn the device off."""
+        """
+        Turn the device off.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x3E, 0x40, 0x60))
 
     def turn_on(self) -> CommandResponse:
-        """Turn the device on."""
+        """
+        Turn the device on.
+
+        Returns
+        -------
+        CommandResponse
+            Command response.
+        """
         return CommandResponse.from_bytes(self.send_command(0x3E, 0x40, 0x70))
 
     @override
