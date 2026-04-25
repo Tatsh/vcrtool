@@ -63,11 +63,10 @@ def test_get_pipewire_audio_device_node_id_invalid_device(mocker: MockerFixture)
 
 
 def test_get_pipewire_audio_device_node_id_not_found(mocker: MockerFixture) -> None:
-    mocker.patch('vcrtool.utils.debug_sp_run',
-                 side_effect=[
-                     MagicMock(stdout='ATTRS{product}=="Test Device"\n'),
-                     MagicMock(stdout=''),
-                 ])
+    mocker.patch(
+        'vcrtool.utils.debug_sp_run',
+        side_effect=[MagicMock(stdout='ATTRS{product}=="Test Device"\n'),
+                     MagicMock(stdout='')])
     name, node_id = get_pipewire_audio_device_node_id('hw:0,0')
     assert name is None
     assert node_id is None
@@ -77,7 +76,7 @@ def test_get_pipewire_audio_device_node_id_no_match(mocker: MockerFixture) -> No
     mocker.patch('vcrtool.utils.debug_sp_run',
                  side_effect=[
                      MagicMock(stdout='ATTRS{product}=="Test Device"\n'),
-                     MagicMock(stdout='a. Test Device'),
+                     MagicMock(stdout='a. Test Device')
                  ])
     mocker.patch('vcrtool.utils.re.search', return_value=None)
     name, node_id = get_pipewire_audio_device_node_id('hw:0,0')

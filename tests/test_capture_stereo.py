@@ -244,17 +244,12 @@ async def test_a_main_vbi_proc_terminate_error(mocker: MockerFixture) -> None:
     mock_vbi_proc.terminate.assert_called_once()
 
 
-@pytest.mark.parametrize(
-    ('args', 'expected_exit_code'),
-    [
-        (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'], 0),
-        (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', '-t', 'invalid', 'output'
-          ], 1),
-        (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', '-b', 'vbi_device', 'output'
-          ], 0),
-        (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', '-i', '3', 'output'], 0),
-    ],
-)
+@pytest.mark.parametrize(('args', 'expected_exit_code'), [
+    (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', 'output'], 0),
+    (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', '-t', 'invalid', 'output'], 1),
+    (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', '-b', 'vbi_device', 'output'], 0),
+    (['-a', 'audio_device', '-v', 'video_device', '-s', 'serial', '-i', '3', 'output'], 0)
+])
 def test_main_success(mocker: MockerFixture, runner: CliRunner, args: list[str],
                       expected_exit_code: int) -> None:
     mocker.patch('vcrtool.capture_stereo.get_pipewire_audio_device_node_id',
