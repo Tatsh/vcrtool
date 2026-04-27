@@ -9,6 +9,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+## [0.0.3] - 2026-04-26
+
 ### Changed
 
 - Removed unnecessary `type: ignore[attr-defined]` comment from `pyrate_limiter` import now that the
@@ -16,7 +18,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ### Fixed
 
-- Fixed typo "exceed" to "exceeded" in `send_command` and `send_command_fast` docstrings.
+- Fixed typo 'exceed' to 'exceeded' in `send_command` and `send_command_fast` docstrings.
 
 ## [0.0.2] - 2025-12-20
 
@@ -28,6 +30,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 First version.
 
-[unreleased]: https://github.com/Tatsh/vcrtool/compare/v0.0.1...HEAD
+[unreleased]: https://github.com/Tatsh/vcrtool/compare/v0.0.3...HEAD
+[0.0.3]: https://github.com/Tatsh/vcrtool/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/Tatsh/vcrtool/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/Tatsh/vcrtool/releases/tag/v0.0.1

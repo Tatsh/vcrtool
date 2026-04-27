@@ -5,7 +5,7 @@ local utils = import 'utils.libjsonnet';
   description: 'Control a JLIP device such as a VCR.',
   keywords: ['command line', 'dvd', 'jlip', 'vcr', 'vhs'],
   project_name: 'vcrtool',
-  version: '0.0.2',
+  version: '0.0.3',
   want_main: true,
   want_flatpak: true,
   publishing+: { flathub: 'sh.tat.vcrtool' },

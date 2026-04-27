@@ -30,5 +30,5 @@ platforms:
 source-code: 'https://github.com/Tatsh/vcrtool'
 summary: 'Control a JLIP device such as a VCR.'
 title: 'vcrtool'
-version: '0.0.2'
+version: '0.0.3'
 website: 'https://tatsh.github.io/vcrtool/'
