@@ -75,9 +75,13 @@ html_theme_options = {
     'toc_title_is_page_title': True
 }
 intersphinx_mapping = {
+    'anyio': ('https://anyio.readthedocs.io/en/stable/', None),
     'bascom': ('https://bascom.readthedocs.io/en/latest/', None),
     'click': ('https://click.palletsprojects.com/en/latest/', None),
-    'psutil': ('https://psutil.readthedocs.io/en/latest/', None),
+    'psutil': ('https://psutil.readthedocs.io/stable/', None),
+    'pyftdi': ('https://eblot.github.io/pyftdi/', None),
+    'pyrate-limiter': ('https://pyratelimiter.readthedocs.io/en/latest/', None),
+    'pyserial': ('https://pyserial.readthedocs.io/en/latest/', None),
     'python': ('https://docs.python.org/3', None),
     'typing-extensions': ('https://typing-extensions.readthedocs.io/en/latest/', None)
 }
