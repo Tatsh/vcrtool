@@ -40,6 +40,7 @@ ffreport
 filevers
 flathub
 foxundermoon
+fqxz
 ftdi
 functools
 genindex
