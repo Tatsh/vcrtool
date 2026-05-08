@@ -20,7 +20,8 @@ parts:
     plugin: 'python'
     python-packages:
       - '.'
-    source: '.'
+    source: 'https://github.com/Tatsh/vcrtool.git'
+    source-tag: 'v0.0.4'
     stage-packages: []
 platforms:
   amd64:
@@ -30,5 +31,5 @@ platforms:
 source-code: 'https://github.com/Tatsh/vcrtool'
 summary: 'Control a JLIP device such as a VCR.'
 title: 'vcrtool'
-version: '0.0.3'
+version: '0.0.4'
 website: 'https://tatsh.github.io/vcrtool/'

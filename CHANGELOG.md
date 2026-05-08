@@ -9,6 +9,22 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+## [0.0.4] - 2026-05-08
+
+### Changed
+
+- Snapcraft and Flatpak manifests now build from the released git tag instead of the working
+  directory, so packaged builds reproduce the exact tagged source.
+- AppImage workflow excludes `capture-stereo` and emits the dist artefact under the project name.
+- Documentation configuration adds intersphinx mappings for `anyio`, `pyftdi`, `pyrate-limiter`,
+  and `pyserial`, fixes the `psutil` URL, and refreshes the repo icon.
+- Bumped `click` to 8.3.3 and `ip-address` to 10.1.1; refreshed CodeQL action, markdownlint-cli2,
+  and other development dependencies.
+
+### Fixed
+
+- Spelling dictionary updated for new vocabulary used in code and documentation.
+
 ## [0.0.3] - 2026-04-26
 
 ### Changed
@@ -30,7 +46,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 First version.
 
-[unreleased]: https://github.com/Tatsh/vcrtool/compare/v0.0.3...HEAD
+[unreleased]: https://github.com/Tatsh/vcrtool/compare/v0.0.4...HEAD
+[0.0.4]: https://github.com/Tatsh/vcrtool/compare/v0.0.3...v0.0.4
 [0.0.3]: https://github.com/Tatsh/vcrtool/compare/v0.0.2...v0.0.3
 [0.0.2]: https://github.com/Tatsh/vcrtool/compare/v0.0.1...v0.0.2
 [0.0.1]: https://github.com/Tatsh/vcrtool/releases/tag/v0.0.1
