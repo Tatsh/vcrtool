@@ -4,13 +4,13 @@ requires = ["hatchling"]
 
 [dependency-groups]
 dev = [
-  "commitizen>=4.13.10",
-  "cz-path>=0.0.6",
-  "mypy>=1.20.1",
+  "commitizen>=4.16.2",
+  "cz-path>=0.0.7",
+  "mypy>=2.1.0",
   "ruff==0.15.14",
-  "ty>=0.0.31",
-  "types-psutil>=7.2.2.20260408",
-  "types-pyserial>=3.5.0.20260408",
+  "ty>=0.0.39",
+  "types-psutil>=7.2.2.20260518",
+  "types-pyserial>=3.5.0.20260519",
   "yapf>=0.43.0",
 ]
 docs = [
@@ -23,7 +23,7 @@ docs = [
   "sphinx-datatables>=1.0.0",
   "sphinx-immaterial>=0.13.9",
   "sphinx>=9.1.0; python_version >= \"3.13\"",
-  "tomlkit>=0.14.0",
+  "tomlkit>=0.15.0",
 ]
 tests = [
   "coveralls>=4.1.0",
@@ -48,8 +48,8 @@ classifiers = [
 ]
 dependencies = [
   "anyio>=4.13.0",
-  "bascom>=0.1.2",
-  "click>=8.3.2",
+  "bascom>=0.1.3",
+  "click>=8.4.1",
   "psutil>=7.2.2",
   "pyftdi>=0.57.1",
   "pyrate-limiter>=4.1.0",
