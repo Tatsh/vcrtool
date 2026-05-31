@@ -36,6 +36,27 @@ C = TypeVar('C', bound=Callable[..., Any])
 log = logging.getLogger(__name__)
 
 
+def _wait_for_vcr_stop(vcr: JLIP, ffmpeg_proc: asp.Process) -> None:
+    """
+    Poll the VCR until it stops playing forward, then terminate ffmpeg.
+
+    Parameters
+    ----------
+    vcr : JLIP
+        The VCR device to monitor.
+    ffmpeg_proc : asyncio.subprocess.Process
+        The ffmpeg process to terminate once playback stops.
+    """
+    ffmpeg_pid = ffmpeg_proc.pid
+    while psutil.pid_exists(ffmpeg_pid):
+        data = vcr.get_vtr_mode(fast=True)
+        if data.vtr_mode != VTRMode.PLAY_FWD:
+            log.debug('Detected VCR is no longer playing (mode = %s). Terminating ffmpeg.',
+                      data.vtr_mode)
+            ffmpeg_proc.terminate()
+            break
+
+
 async def _a_main(video_device: str, audio_device: str, length: int, output: str, input_index: int,
                   vbi_device: str | None, vcr: JLIP) -> int:
     log.debug('Starting ffmpeg.')
@@ -121,15 +142,8 @@ async def _a_main(video_device: str, audio_device: str, length: int, output: str
     await adebug_sleep(1)
     log.debug('Starting VCR playback.')
     vcr.play()
-    ffmpeg_pid = ffmpeg_proc.pid
     try:
-        while psutil.pid_exists(ffmpeg_pid):
-            data = vcr.get_vtr_mode(fast=True)
-            if data.vtr_mode != VTRMode.PLAY_FWD:
-                log.debug('Detected VCR is no longer playing (mode = %s). Terminating ffmpeg.',
-                          data.vtr_mode)
-                ffmpeg_proc.terminate()
-                break
+        _wait_for_vcr_stop(vcr, ffmpeg_proc)
     except KeyboardInterrupt:
         log.info('Received keyboard interrupt. Terminating ffmpeg.')
         ffmpeg_proc.terminate()
