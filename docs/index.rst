@@ -97,6 +97,7 @@ Example usage
       :caption: Contents:
 
       lib
+      sircs
       notes
 
   Indices and tables

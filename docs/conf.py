@@ -79,7 +79,6 @@ intersphinx_mapping = {
     'bascom': ('https://bascom.readthedocs.io/en/latest/', None),
     'click': ('https://click.palletsprojects.com/en/latest/', None),
     'psutil': ('https://psutil.readthedocs.io/stable/', None),
-    'pyftdi': ('https://eblot.github.io/pyftdi/', None),
     'pyrate-limiter': ('https://pyratelimiter.readthedocs.io/en/latest/', None),
     'pyserial': ('https://pyserial.readthedocs.io/en/latest/', None),
     'python': ('https://docs.python.org/3', None),
