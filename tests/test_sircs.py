@@ -1,70 +1,65 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING
 
-from vcrtool.sircs import SIRCS
+from vcrtool.sansio import Pulse, SIRCSCommand
+from vcrtool.sircs import PicoSIRCSTransport
 import pytest
 
 if TYPE_CHECKING:
-    from unittest.mock import MagicMock
+    from collections.abc import Iterator
 
     from pytest_mock import MockerFixture
 
 
-@pytest.fixture
-def mock_gpio(mocker: MockerFixture) -> Any:
-    """Fixture to mock the GpioAsyncController."""
-    mock_gpio = mocker.patch('vcrtool.sircs.GpioAsyncController', autospec=True)
-    return mock_gpio.return_value
+def test_serialize_basic() -> None:
+    pulses = [Pulse(carrier_on=True, duration_us=600), Pulse(carrier_on=False, duration_us=600)]
+    assert PicoSIRCSTransport.serialize(pulses) == bytes([0xA5, 0, 2, 1, 2, 88, 0, 2, 88])
 
 
-@pytest.fixture
-def sircs(mock_gpio: MagicMock) -> SIRCS:
-    """Fixture to create a SIRCS instance with mocked GPIO."""
-    return SIRCS()
+def test_serialize_invert() -> None:
+    pulses = [Pulse(carrier_on=True, duration_us=600), Pulse(carrier_on=False, duration_us=600)]
+    assert PicoSIRCSTransport.serialize(pulses,
+                                        invert=True) == bytes([0xA5, 0, 2, 0, 2, 88, 1, 2, 88])
 
 
-def test_logic1(sircs: MagicMock, mock_gpio: MagicMock) -> None:
-    """Test the logic1 method."""
-    sircs.logic1()
-    mock_gpio.write.assert_called_once_with(255)
+def test_serialize_rejects_long_duration() -> None:
+    with pytest.raises(ValueError, match='does not fit in 16 bits'):
+        PicoSIRCSTransport.serialize([Pulse(carrier_on=True, duration_us=70_000)])
 
 
-def test_logic0(sircs: MagicMock, mock_gpio: MagicMock) -> None:
-    """Test the logic0 method."""
-    sircs.logic0()
-    mock_gpio.write.assert_called_once_with(0)
+def test_serialize_rejects_too_many_pulses() -> None:
+    def pulses() -> Iterator[Pulse]:
+        for _ in range(0x10000 + 1):
+            yield Pulse(carrier_on=True, duration_us=0)
+
+    with pytest.raises(ValueError, match='Too many pulses to serialise'):
+        PicoSIRCSTransport.serialize(pulses())
 
 
-def test_send_command_all_ones(sircs: MagicMock, mocker: MockerFixture) -> None:
-    """Test send_command with all bits set to 1."""
-    mock_debug_sleep = mocker.patch('vcrtool.sircs.debug_sleep')
-    sircs.send_command([1, 1, 1])
-    assert mock_debug_sleep.call_count == 7
-    mock_debug_sleep.assert_any_call(0.0012)
-    mock_debug_sleep.assert_any_call(0.0006)
+def test_transmit_writes_serialized(mocker: MockerFixture) -> None:
+    mock_serial = mocker.patch('serial.Serial')
+    pico = PicoSIRCSTransport('/dev/ttyACM0')
+    pulses = [Pulse(carrier_on=True, duration_us=600), Pulse(carrier_on=False, duration_us=600)]
+    pico.transmit(pulses)
+    mock_serial.return_value.write.assert_called_once_with(PicoSIRCSTransport.serialize(pulses))
 
 
-def test_send_command_all_zeros(sircs: MagicMock, mocker: MockerFixture) -> None:
-    """Test send_command with all bits set to 0."""
-    mock_debug_sleep = mocker.patch('vcrtool.sircs.debug_sleep')
-    sircs.send_command([0, 0, 0])
-    assert mock_debug_sleep.call_count == 7
-    mock_debug_sleep.assert_any_call(0.0006)
+def test_transmit_applies_invert(mocker: MockerFixture) -> None:
+    mock_serial = mocker.patch('serial.Serial')
+    pico = PicoSIRCSTransport('/dev/ttyACM0', invert=True)
+    pulses = [Pulse(carrier_on=True, duration_us=600)]
+    pico.transmit(pulses)
+    mock_serial.return_value.write.assert_called_once_with(
+        PicoSIRCSTransport.serialize(pulses, invert=True))
 
 
-def test_send_command_mixed_bits(sircs: MagicMock, mocker: MockerFixture) -> None:
-    """Test send_command with a mix of 1s and 0s."""
-    mock_debug_sleep = mocker.patch('vcrtool.sircs.debug_sleep')
-    sircs.send_command([1, 0, 1])
-    assert mock_debug_sleep.call_count == 7
-    mock_debug_sleep.assert_any_call(0.0012)
-    mock_debug_sleep.assert_any_call(0.0006)
-
-
-def test_send_command_timing(sircs: MagicMock, mocker: MockerFixture) -> None:
-    """Test send_command ensures total timing is correct."""
-    mock_debug_sleep = mocker.patch('vcrtool.sircs.debug_sleep')
-    sircs.send_command([1, 1, 1])
-    total_sleep_time = sum(call.args[0] for call in mock_debug_sleep.call_args_list)
-    assert pytest.approx(total_sleep_time, 0.001) == 0.045
+def test_send_command_writes_frame(mocker: MockerFixture) -> None:
+    mock_serial = mocker.patch('serial.Serial')
+    pico = PicoSIRCSTransport('/dev/ttyACM0')
+    pico.send_command(SIRCSCommand(command=1, address=1), repeat=1)
+    mock_serial.return_value.write.assert_called_once()
+    buffer = mock_serial.return_value.write.call_args.args[0]
+    assert buffer[0] == 0xA5
+    # A twelve-bit frame is 2 header pulses plus 24 data pulses.
+    assert (buffer[1] << 8) | buffer[2] == 26
