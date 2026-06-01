@@ -32,7 +32,7 @@ class _FakeDataclass:
 
 @pytest.mark.parametrize('command', VALID_COMMANDS)
 def test_jlip_valid_command(runner: CliRunner, mocker: MockerFixture, command: str) -> None:
-    mock_jlip = mocker.patch('vcrtool.main.JLIP')
+    mock_jlip = mocker.patch('vcrtool.main.JLIPTransport')
     mock_instance = mock_jlip.return_value
     mock_method = mocker.Mock(return_value=_FakeDataclass())
     setattr(mock_instance, command.replace('-', '_'), mock_method)
@@ -46,7 +46,7 @@ def test_jlip_valid_command(runner: CliRunner, mocker: MockerFixture, command: s
 def test_jlip_debug_logging(runner: CliRunner, mocker: MockerFixture) -> None:
     mocker.patch('vcrtool.main.VALID_COMMANDS', ['valid-command'])
     mock_setup_logging = mocker.patch('vcrtool.main.setup_logging')
-    mock_jlip = mocker.patch('vcrtool.main.JLIP')
+    mock_jlip = mocker.patch('vcrtool.main.JLIPTransport')
     mock_instance = mock_jlip.return_value
     mock_method = mocker.Mock(return_value=_FakeDataclass())
     mock_instance.valid_command = mock_method

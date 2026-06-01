@@ -3,32 +3,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from time import sleep
-from typing import TYPE_CHECKING
 import enum
 
 from pyrate_limiter import Duration, Limiter, Rate
 from typing_extensions import override
 import serial
 
-from .utils import pad_right
+from .sansio import CommandStatus, JLIPCodec
 
-if TYPE_CHECKING:
-    from collections.abc import Sequence
-
-__all__ = ('JLIP', 'BandInfo', 'CommandResponse', 'CommandResponseTuple', 'CommandStatus',
-           'DeviceNameResponse', 'PowerStateResponse', 'VTRMode', 'VTRModeResponse')
-
-
-class CommandStatus(enum.IntEnum):
-    """Command status codes."""
-    COMMAND_ACCEPTED = 3
-    """Command accepted."""
-    COMMAND_ACCEPTED_NOT_COMPLETE = 4
-    """Command accepted but not complete."""
-    COMMAND_NOT_IMPLEMENTED = 1
-    """Command not implemented."""
-    COMMAND_NOT_POSSIBLE = 5
-    """Command not possible."""
+__all__ = ('BandInfo', 'CommandResponse', 'CommandResponseTuple', 'CommandStatus',
+           'DeviceNameResponse', 'JLIPTransport', 'PowerStateResponse', 'VTRMode',
+           'VTRModeResponse')
 
 
 @dataclass
@@ -302,33 +287,16 @@ class DeviceNameResponse(CommandResponse):
                 '>')
 
 
-def checksum(vals: Sequence[int]) -> int:
-    """
-    Checksum for JLIP commands.
-
-    Parameters
-    ----------
-    vals : Sequence[int]
-        Values to checksum.
-
-    Returns
-    -------
-    int
-        Computed checksum.
-    """
-    sum_ = 0x80
-    for i in range(10):
-        sum_ -= (vals[i] & 0x7F)
-    return sum_ & 0x7F
-
-
 limiter = Limiter(Rate(2, Duration.SECOND))
 fast_limiter = Limiter(Rate(10, Duration.SECOND))
 
 
-class JLIP:  # noqa: PLR0904
+class JLIPTransport:  # noqa: PLR0904
     """
     Send commands to HR-S9600U VCRs and similar devices over JLIP.
+
+    The serial port is the only I/O this class performs; the request framing and response
+    validation live in :py:class:`~vcrtool.sansio.JLIPCodec`.
 
     References
     ----------
@@ -355,6 +323,8 @@ class JLIP:  # noqa: PLR0904
         raise_on_error_response : bool
             If ``True``, raise an exception on error response.
         """
+        self.codec = JLIPCodec()
+        """The sans-I/O codec used to build and validate frames."""
         self.comm = serial.Serial(serial_path, parity=serial.PARITY_ODD, rtscts=True, timeout=2)
         """Serial port object."""
         self.jlip_id = jlip_id
@@ -375,27 +345,11 @@ class JLIP:  # noqa: PLR0904
         -------
         bytes
             Raw response bytes.
-
-        Raises
-        ------
-        ValueError
-            If the checksum does not match or if the command status is not accepted.
         """
-        arr = (255, 255, self.jlip_id, *pad_right(0, args, 7))
-        self.comm.write(bytearray([*arr, checksum(arr)]))
+        self.comm.write(self.codec.build_command(self.jlip_id, *args))
         sleep(0.1)
-        ret = self.comm.read(11)
-        actual_checksum = checksum(list(ret)[:10])
-        if ret[10] != actual_checksum:
-            msg = (f'Checksum did not match. Expected {actual_checksum} but received {ret[10]}.')
-            raise ValueError(msg)
-        status = ret[3] & 0b111
-        if (self.raise_on_error_response and status not in {
-                CommandStatus.COMMAND_ACCEPTED, CommandStatus.COMMAND_ACCEPTED_NOT_COMPLETE
-        }):
-            msg = f'Command status: {CommandStatus(status)!s}'
-            raise ValueError(msg)
-        return ret
+        return self.codec.validate_response(self.comm.read(11),
+                                            raise_on_error=self.raise_on_error_response)
 
     def send_command(self, *args: int) -> bytes:
         """
@@ -985,4 +939,5 @@ class JLIP:  # noqa: PLR0904
 
     @override
     def __repr__(self) -> str:
-        return '<JLIP jlip_id={self.jlip_id} raise_on_error={self.raise_on_error_response}>'
+        return (f'<JLIPTransport jlip_id={self.jlip_id} '
+                f'raise_on_error={self.raise_on_error_response}>')

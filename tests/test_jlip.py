@@ -5,19 +5,19 @@ from unittest.mock import MagicMock
 import sys
 
 from vcrtool.jlip import (
-    JLIP,
     NTSC_FRAMERATE,
     BandInfo,
     CommandResponse,
     CommandResponseTuple,
     CommandStatus,
     DeviceNameResponse,
+    JLIPTransport,
     PowerStateResponse,
     VTRMode,
     VTRModeResponse,
     VTUModeResponse,
-    checksum,
 )
+from vcrtool.sansio import checksum
 import pytest
 
 if TYPE_CHECKING:
@@ -30,8 +30,8 @@ def mock_serial(mocker: MockerFixture) -> MagicMock:
 
 
 @pytest.fixture
-def jlip(mock_serial: MagicMock) -> JLIP:
-    return JLIP(serial_path='/dev/ttyS0')
+def jlip(mock_serial: MagicMock) -> JLIPTransport:
+    return JLIPTransport(serial_path='/dev/ttyS0')
 
 
 def test_eject(jlip: MagicMock, mocker: MockerFixture) -> None:
@@ -312,7 +312,7 @@ def test_get_play_speed(jlip: MagicMock, mocker: MockerFixture) -> None:
 
 
 def test_checksum_valid(mocker: MockerFixture) -> None:
-    mocker.patch('vcrtool.jlip.pad_right', side_effect=lambda _, y, __: y)
+    mocker.patch('vcrtool.sansio.pad_right', side_effect=lambda _, y, __: y)
     vals = [0x10, 0x20, 0x30, 0x40, 0x50, 0x60, 0x70, 0x80, 0x90, 0xA0]
     result = checksum(vals)
     expected = (0x80 - sum(v & 0x7F for v in vals)) & 0x7F
@@ -320,7 +320,7 @@ def test_checksum_valid(mocker: MockerFixture) -> None:
 
 
 def test_checksum_all_zeros(mocker: MockerFixture) -> None:
-    mocker.patch('vcrtool.jlip.pad_right', side_effect=lambda _, y, __: y)
+    mocker.patch('vcrtool.sansio.pad_right', side_effect=lambda _, y, __: y)
     vals = [0] * 10
     result = checksum(vals)
     expected = 0x80 & 0x7F
@@ -328,7 +328,7 @@ def test_checksum_all_zeros(mocker: MockerFixture) -> None:
 
 
 def test_checksum_large_values(mocker: MockerFixture) -> None:
-    mocker.patch('vcrtool.jlip.pad_right', side_effect=lambda _, y, __: y)
+    mocker.patch('vcrtool.sansio.pad_right', side_effect=lambda _, y, __: y)
     vals = [0xFF] * 10
     result = checksum(vals)
     expected = (0x80 - sum(v & 0x7F for v in vals)) & 0x7F
@@ -339,7 +339,7 @@ def test_send_command_base_valid_checksum(jlip: MagicMock, mocker: MockerFixture
     mock_serial_write = mocker.patch.object(jlip.comm, 'write')
     mock_serial_read = mocker.patch.object(
         jlip.comm, 'read', return_value=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C')
-    mock_checksum = mocker.patch('vcrtool.jlip.checksum', side_effect=lambda _: 0x7C)
+    mock_checksum = mocker.patch('vcrtool.sansio.checksum', side_effect=lambda _: 0x7C)
     response = jlip.send_command_base(0x01, 0x02, 0x03)
     mock_serial_write.assert_called_once_with(bytearray([255, 255, 1, 1, 2, 3, 0, 0, 0, 0, 124]))
     mock_serial_read.assert_called_once_with(11)
@@ -351,7 +351,7 @@ def test_send_command_base_invalid_checksum(jlip: MagicMock, mocker: MockerFixtu
     mock_serial_write = mocker.patch.object(jlip.comm, 'write')
     mock_serial_read = mocker.patch.object(
         jlip.comm, 'read', return_value=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7D')
-    mock_checksum = mocker.patch('vcrtool.jlip.checksum', side_effect=lambda _: 0x7C)
+    mock_checksum = mocker.patch('vcrtool.sansio.checksum', side_effect=lambda _: 0x7C)
 
     with pytest.raises(ValueError,
                        match=r'Checksum did not match\. Expected 124 but received 125\.'):
@@ -367,7 +367,7 @@ def test_send_command_base_invalid_status(jlip: MagicMock, mocker: MockerFixture
     mock_serial_write = mocker.patch.object(jlip.comm, 'write')
     mock_serial_read = mocker.patch.object(
         jlip.comm, 'read', return_value=b'\xFF\xFF\x01\x05\x00\x00\x00\x00\x00\x00\x7C')
-    mock_checksum = mocker.patch('vcrtool.jlip.checksum', side_effect=lambda _: 0x7C)
+    mock_checksum = mocker.patch('vcrtool.sansio.checksum', side_effect=lambda _: 0x7C)
 
     with pytest.raises(ValueError, match='Command status: 5'):
         jlip.send_command_base(0x01, 0x02, 0x03)
@@ -382,7 +382,7 @@ def test_send_command_base_status_not_raised(jlip: MagicMock, mocker: MockerFixt
     mock_serial_write = mocker.patch.object(jlip.comm, 'write')
     mock_serial_read = mocker.patch.object(
         jlip.comm, 'read', return_value=b'\xFF\xFF\x01\x05\x00\x00\x00\x00\x00\x00\x7C')
-    mock_checksum = mocker.patch('vcrtool.jlip.checksum', side_effect=lambda _: 0x7C)
+    mock_checksum = mocker.patch('vcrtool.sansio.checksum', side_effect=lambda _: 0x7C)
 
     response = jlip.send_command_base(0x01, 0x02, 0x03)
 
@@ -630,8 +630,8 @@ def test_device_name_response_repr() -> None:
 @pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_jlip_repr(mocker: MockerFixture) -> None:
     mocker.patch('vcrtool.jlip.serial.Serial')
-    jlip = JLIP(serial_path='/dev/ttyS0', jlip_id=1, raise_on_error_response=True)
-    expected_repr = '<JLIP jlip_id={self.jlip_id} raise_on_error={self.raise_on_error_response}>'
+    jlip = JLIPTransport(serial_path='/dev/ttyS0', jlip_id=1, raise_on_error_response=True)
+    expected_repr = '<JLIPTransport jlip_id=1 raise_on_error=True>'
     assert repr(jlip) == expected_repr
 
 

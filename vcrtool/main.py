@@ -9,13 +9,13 @@ import json
 from bascom import setup_logging
 import click
 
-from .jlip import JLIP
+from .jlip import JLIPTransport
 
 __all__ = ('jlip',)
 
 DISALLOWED_COMMANDS = {'send_command_base', 'send_command_fast'}
 VALID_COMMANDS = [
-    name.replace('_', '-') for name, x in inspect.getmembers(JLIP)
+    name.replace('_', '-') for name, x in inspect.getmembers(JLIPTransport)
     if callable(x) and not name.startswith('_') and name not in DISALLOWED_COMMANDS
 ]
 
@@ -35,7 +35,7 @@ def jlip(serial_device: str, args: tuple[str, ...], *, debug: bool = False) -> N
     if not command or command not in VALID_COMMANDS:
         msg = f'Invalid command `{command}`. Valid commands: {", ".join(VALID_COMMANDS)}.'
         raise click.BadArgumentUsage(msg)
-    vcr = JLIP(serial_device, raise_on_error_response=False)
+    vcr = JLIPTransport(serial_device, raise_on_error_response=False)
     click.echo(
         json.dumps(
             dataclasses.asdict(

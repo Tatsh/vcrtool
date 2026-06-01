@@ -17,7 +17,7 @@ import anyio
 import click
 import psutil
 
-from .jlip import JLIP, VTRMode
+from .jlip import JLIPTransport, VTRMode
 from .utils import (
     adebug_create_subprocess_exec,
     adebug_sleep,
@@ -36,13 +36,13 @@ C = TypeVar('C', bound=Callable[..., Any])
 log = logging.getLogger(__name__)
 
 
-def _wait_for_vcr_stop(vcr: JLIP, ffmpeg_proc: asp.Process) -> None:
+def _wait_for_vcr_stop(vcr: JLIPTransport, ffmpeg_proc: asp.Process) -> None:
     """
     Poll the VCR until it stops playing forward, then terminate ffmpeg.
 
     Parameters
     ----------
-    vcr : JLIP
+    vcr : JLIPTransport
         The VCR device to monitor.
     ffmpeg_proc : asyncio.subprocess.Process
         The ffmpeg process to terminate once playback stops.
@@ -58,7 +58,7 @@ def _wait_for_vcr_stop(vcr: JLIP, ffmpeg_proc: asp.Process) -> None:
 
 
 async def _a_main(video_device: str, audio_device: str, length: int, output: str, input_index: int,
-                  vbi_device: str | None, vcr: JLIP) -> int:
+                  vbi_device: str | None, vcr: JLIPTransport) -> int:
     log.debug('Starting ffmpeg.')
     length = int(length) + 15
     log.debug('Will record for %s seconds.', length)
@@ -200,7 +200,7 @@ def main(serial: str, audio_device: str, video_device: str, vbi_device: str | No
     if not audio_device_is_available(audio_device):
         click.secho('Cannot use audio device.', file=sys.stderr)
         raise click.Abort
-    vcr = JLIP(serial)
+    vcr = JLIPTransport(serial)
     log.debug('Turning VCR on.')
     vcr.turn_on()
     if not vcr.get_vtr_mode().tape_inserted:

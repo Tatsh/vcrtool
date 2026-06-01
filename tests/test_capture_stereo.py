@@ -258,7 +258,7 @@ def test_main_success(mocker: MockerFixture, runner: CliRunner, args: list[str],
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
     mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
-    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
+    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIPTransport')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=True)
     mock_vcr_instance.rewind_wait = MagicMock()
@@ -280,7 +280,7 @@ def test_main_no_tape_inserted(mocker: MockerFixture, runner: CliRunner) -> None
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
     mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
-    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
+    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIPTransport')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=False)
     mock_vcr_instance.turn_on = MagicMock()
@@ -332,7 +332,7 @@ def test_main_wpctl_resolved_path_used(mocker: MockerFixture, runner: CliRunner)
     mock_sp_run = mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
     mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
-    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
+    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIPTransport')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=True)
     mock_vcr_instance.rewind_wait = MagicMock()
@@ -355,7 +355,7 @@ def test_main_recording_failed(mocker: MockerFixture, runner: CliRunner) -> None
     mocker.patch('vcrtool.capture_stereo.sp.run')
     mocker.patch('vcrtool.capture_stereo.debug_sleep')
     mocker.patch('vcrtool.capture_stereo.shutil.which', return_value='/usr/bin/wpctl')
-    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIP')
+    mock_vcr = mocker.patch('vcrtool.capture_stereo.JLIPTransport')
     mock_vcr_instance = mock_vcr.return_value
     mock_vcr_instance.get_vtr_mode.return_value = MagicMock(tape_inserted=True)
     mock_vcr_instance.rewind_wait = MagicMock()
