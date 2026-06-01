@@ -59,7 +59,6 @@ local utils = import 'utils.libjsonnet';
           'pyrate-limiter': utils.latestPypiPackageVersionCaret('pyrate-limiter'),
           anyio: utils.latestPypiPackageVersionCaret('anyio'),
           psutil: utils.latestPypiPackageVersionCaret('psutil'),
-          pyftdi: utils.latestPypiPackageVersionCaret('pyftdi'),
           pyserial: utils.latestPypiPackageVersionCaret('pyserial'),
           pytimeparse2: utils.latestPypiPackageVersionCaret('pytimeparse2'),
         },
