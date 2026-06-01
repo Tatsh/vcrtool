@@ -9,6 +9,23 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [unreleased]
 
+### Added
+
+- New public module `vcrtool.sansio` providing sans-I/O protocol codecs: `SIRCSCodec` for SIRCS
+  encode and decode and `JLIPCodec` for JLIP frame building and validation, along with `Pulse`,
+  `SIRCSCommand`, `SIRCSVariant`, `CommandStatus`, and `checksum`.
+
+### Changed
+
+- Renamed the public JLIP class `JLIP` to `JLIPTransport`, which now delegates framing and
+  validation to `JLIPCodec`. This is a breaking public API rename.
+- Reworked SIRCS support: the FTDI-based `SIRCS` transport was replaced by `PicoSIRCSTransport`,
+  which drives a Raspberry Pi Pico over USB serial.
+
+### Removed
+
+- Removed the FTDI-based `SIRCS` transport and the `pyftdi` runtime dependency.
+
 ## [0.0.4] - 2026-05-08
 
 ### Changed
