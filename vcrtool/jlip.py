@@ -291,7 +291,7 @@ limiter = Limiter(Rate(2, Duration.SECOND))
 fast_limiter = Limiter(Rate(10, Duration.SECOND))
 
 
-class JLIPTransport:  # noqa: PLR0904
+class JLIPTransport:  # ruff:ignore[too-many-public-methods]
     """
     Send commands to HR-S9600U VCRs and similar devices over JLIP.
 
@@ -771,7 +771,7 @@ class JLIPTransport:  # noqa: PLR0904
         ValueError
             If the ID is not between 1 and 99.
         """
-        if n <= 0 or n > 99:  # noqa: PLR2004
+        if n <= 0 or n > 99:  # ruff:ignore[magic-value-comparison]
             raise ValueError(n)
         self.jlip_id = n
         return CommandResponse.from_bytes(self.send_command(0x7C, 0x41, n))
