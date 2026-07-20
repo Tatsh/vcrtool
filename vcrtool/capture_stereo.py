@@ -1,5 +1,5 @@
 """Tool to control a VCR and capture video, audio, and VBI data."""
-# ruff: noqa: DOC501
+# ruff:file-ignore[docstring-missing-exception]
 from __future__ import annotations
 
 from collections.abc import Callable

@@ -1,5 +1,5 @@
 """Main script."""
-# ruff: noqa: DOC501
+# ruff:file-ignore[docstring-missing-exception]
 from __future__ import annotations
 
 import dataclasses
