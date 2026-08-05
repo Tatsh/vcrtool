@@ -46,6 +46,7 @@ ftdi
 functools
 genindex
 globaltoc
+handoff
 hoverxref
 htmlcov
 ildct
@@ -119,9 +120,9 @@ signtool
 sircs
 snapcore
 snapcraft
-softprops
 soupsieve
 sphinxcontrib
+statusline
 syft
 tatsh
 testpaths
@@ -144,6 +145,7 @@ vendored
 venv
 vers
 virtualenv
+winget
 wiswa
 wiswa's
 worktree
@@ -152,4 +154,5 @@ xcrun
 yapf
 yapfignore
 yarnrc
+zizmor
 zvbi
