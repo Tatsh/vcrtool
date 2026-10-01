@@ -14,6 +14,8 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - New public module `vcrtool.sansio` providing sans-I/O protocol codecs: `SIRCSCodec` for SIRCS
   encode and decode and `JLIPCodec` for JLIP frame building and validation, along with `Pulse`,
   `SIRCSCommand`, `SIRCSVariant`, `CommandStatus`, and `checksum`.
+- `VTRModeResponse.counter_negative`, set when the counter is before zero.
+- HR-S9600EU notes (connection, serial settings, NTSC detection, and query scan results).
 
 ### Changed
 
@@ -21,6 +23,11 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
   validation to `JLIPCodec`. This is a breaking public API rename.
 - Reworked SIRCS support: the FTDI-based `SIRCS` transport was replaced by `PicoSIRCSTransport`,
   which drives a Raspberry Pi Pico over USB serial.
+
+### Fixed
+
+- `VTRModeResponse.minute` no longer includes the minus-sign bit (`0x40`) when the counter is
+  negative, which made a counter of `-2:19:15` read as 83 minutes.
 
 ### Removed
 

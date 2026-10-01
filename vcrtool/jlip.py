@@ -97,6 +97,8 @@ class VTRMode(enum.IntEnum):
     """Stop."""
 
 
+_COUNTER_NEGATIVE_FLAG = 0x40
+"""Bit of the minute byte that is set when the counter is before zero."""
 NTSC_FRAMERATE = 30
 """NTSC framerate (rounded)."""
 PAL_FRAMERATE = 25
@@ -128,6 +130,8 @@ class VTRModeResponse(CommandResponse):
     """Tape inserted."""
     vtr_mode: VTRMode
     """VTR mode."""
+    counter_negative: bool = False
+    """Counter is before zero (the VCR shows it with a minus sign)."""
     @override
     @staticmethod
     def from_bytes(resp: bytes) -> VTRModeResponse:
@@ -147,17 +151,29 @@ class VTRModeResponse(CommandResponse):
         parent = CommandResponse.from_bytes(resp)
         framerate = PAL_FRAMERATE if ((resp[5] >> 2) & 1) == 1 else NTSC_FRAMERATE
         return VTRModeResponse(parent.checksum,
-                               parent.raw, parent.return_data, parent.status, parent.tuple,
-                               bool(resp[5] & 1), framerate, resp[6], resp[7], resp[8], resp[9],
-                               framerate == NTSC_FRAMERATE, framerate == PAL_FRAMERATE,
+                               parent.raw,
+                               parent.return_data,
+                               parent.status,
+                               parent.tuple,
+                               bool(resp[5] & 1),
+                               framerate,
+                               resp[6],
+                               resp[7] & ~_COUNTER_NEGATIVE_FLAG,
+                               resp[8],
+                               resp[9],
+                               framerate == NTSC_FRAMERATE,
+                               framerate == PAL_FRAMERATE,
                                not bool(resp[4] >> 5 & 1), ((resp[4] >> 4) & 1) == 0,
-                               VTRMode((resp[4]) & 0b1111))
+                               VTRMode((resp[4]) & 0b1111),
+                               counter_negative=bool(resp[7] & _COUNTER_NEGATIVE_FLAG))
 
     @override
     def __repr__(self) -> str:
+        sign = '-' if self.counter_negative else ''
         return ('<VTRModeResponse '
                 f'checksum={hex(self.checksum)} '
-                f'counter="{self.hour:02}:{self.minute:02}:{self.second:02}:{self.frame:06}" '
+                f'counter="{sign}{self.hour:02}:{self.minute:02}:{self.second:02}:'
+                f'{self.frame:06}" '
                 f'drop_framerate_mode_enabled={self.drop_frame_mode_enabled} '
                 f'framerate={self.framerate} '
                 f'is_ntsc={self.is_ntsc} '
