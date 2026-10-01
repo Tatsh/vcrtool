@@ -566,6 +566,12 @@ def test_vtr_mode_response_repr() -> None:
 
 
 @pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
+def test_vtr_mode_response_repr_negative_counter() -> None:
+    response = VTRModeResponse.from_bytes(b'\xFC\xFF\x01\x03\x23\x04\x02\x53\x0F\x07\x6F')
+    assert 'counter="-02:19:15:000007"' in repr(response)
+
+
+@pytest.mark.skipif(sys.version_info < (3, 11), reason='Requires Python 3.11.')
 def test_vtu_mode_response_repr() -> None:
     response = VTUModeResponse(checksum=0x7C,
                                raw=b'\xFF\xFF\x01\x03\x00\x00\x00\x00\x00\x00\x7C',
@@ -751,6 +757,19 @@ def test_vtr_mode_response_from_bytes(mocker: MockerFixture) -> None:
     assert response.recordable is True
     assert response.tape_inserted is True
     assert response.vtr_mode == VTRMode.EJECT
+    assert response.counter_negative is False
+
+
+def test_vtr_mode_response_from_bytes_negative_counter() -> None:
+    raw_data = b'\xFC\xFF\x01\x03\x23\x04\x02\x53\x0F\x07\x6F'
+    response = VTRModeResponse.from_bytes(raw_data)
+    assert response.counter_negative is True
+    assert response.hour == 2
+    assert response.minute == 19
+    assert response.second == 15
+    assert response.frame == 7
+    assert response.is_pal is True
+    assert response.vtr_mode == VTRMode.REW
 
 
 def test_power_state_response_from_bytes() -> None:
