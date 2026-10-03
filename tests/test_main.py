@@ -4,8 +4,9 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 import json
 
-from vcrtool.main import VALID_COMMANDS, jlip
 import pytest
+
+from vcrtool.main import VALID_COMMANDS, jlip
 
 if TYPE_CHECKING:
     from click.testing import CliRunner

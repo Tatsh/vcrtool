@@ -4,6 +4,8 @@ from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 import sys
 
+import pytest
+
 from vcrtool.jlip import (
     NTSC_FRAMERATE,
     BandInfo,
@@ -18,7 +20,6 @@ from vcrtool.jlip import (
     VTUModeResponse,
 )
 from vcrtool.sansio import checksum
-import pytest
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture

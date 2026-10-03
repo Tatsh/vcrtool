@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
+
 from vcrtool.sansio import (
     FRAME_DURATION_US,
     ONE_MARK_US,
@@ -16,7 +18,6 @@ from vcrtool.sansio import (
     SIRCSVariant,
     checksum,
 )
-import pytest
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture

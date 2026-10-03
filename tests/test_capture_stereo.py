@@ -3,10 +3,11 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any, cast
 from unittest.mock import AsyncMock, MagicMock
 
-from vcrtool.capture_stereo import _a_main, main  # ruff:ignore[import-private-name]
-from vcrtool.jlip import VTRMode
 import click
 import pytest
+
+from vcrtool.capture_stereo import _a_main, main  # ruff:ignore[import-private-name]
+from vcrtool.jlip import VTRMode
 
 if TYPE_CHECKING:
     from collections.abc import Callable

@@ -2,9 +2,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+import pytest
+
 from vcrtool.sansio import Pulse, SIRCSCommand
 from vcrtool.sircs import PicoSIRCSTransport
-import pytest
 
 if TYPE_CHECKING:
     from collections.abc import Iterator

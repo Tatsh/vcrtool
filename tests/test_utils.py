@@ -3,6 +3,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from unittest.mock import MagicMock
 
+import pytest
+
 from vcrtool.utils import (
     adebug_create_subprocess_exec,
     adebug_sleep,
@@ -12,7 +14,6 @@ from vcrtool.utils import (
     get_pipewire_audio_device_node_id,
     pad_right,
 )
-import pytest
 
 if TYPE_CHECKING:
     from pytest_mock import MockerFixture
