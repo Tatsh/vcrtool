@@ -1,7 +1,6 @@
 adebug
 alsa
 anchore
-Ångström
 anyio
 appdir
 appimage
@@ -9,6 +8,7 @@ appinfo
 asyncio
 autodoc
 automodule
+autouse
 bascom
 baudrate
 bsky
@@ -17,7 +17,6 @@ codesign
 colorlog
 commitizen
 conftest
-cooldown
 coro
 coveragerc
 coverallsapp
@@ -33,6 +32,7 @@ doctrees
 dunder
 eeyore
 elif
+endswith
 esac
 esbenp
 esbonio
@@ -74,9 +74,13 @@ monkeypatch
 myproject
 mypy
 namedtuples
+noone
+noqa
 norecursedirs
 notarytool
+nullglob
 numpy
+numpydoc
 onefile
 oneline
 pathlib
@@ -84,6 +88,7 @@ pavelzw
 pipewire
 pipx
 plistlib
+popen
 preapproved
 proc
 prodvers
@@ -109,6 +114,7 @@ ripgreprc
 rstcheck
 rtscts
 sansio
+sbclaude
 schemafile
 sdist
 secho
@@ -116,6 +122,7 @@ setattr
 shellcheck
 shellformat
 shiftdir
+shopt
 signtool
 sircs
 snapcore
@@ -148,7 +155,6 @@ virtualenv
 winget
 wiswa
 wiswa's
-worktree
 wpctl
 xcrun
 yapf
@@ -156,3 +162,4 @@ yapfignore
 yarnrc
 zizmor
 zvbi
+Ångström
