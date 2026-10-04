@@ -32,6 +32,7 @@ adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Removed
 
 - Removed the FTDI-based `SIRCS` transport and the `pyftdi` runtime dependency.
+- Support for Python 3.10. Python 3.11 or later is now required.
 
 ## [0.0.4] - 2026-05-08
 

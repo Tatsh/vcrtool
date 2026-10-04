@@ -136,7 +136,6 @@ testpaths
 timecode
 timeparse
 toctree
-tomlkit
 tomllib
 tomlq
 tonumber
