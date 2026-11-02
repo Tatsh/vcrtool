@@ -87,7 +87,7 @@ def test_get_pipewire_audio_device_node_id_no_match(mocker: MockerFixture) -> No
 
 @pytest.mark.asyncio
 async def test_adebug_sleep(mocker: MockerFixture) -> None:
-    mock_sleep = mocker.patch('vcrtool.utils.asyncio.sleep')
+    mock_sleep = mocker.patch('vcrtool.utils.asyncio', sleep=mocker.AsyncMock()).sleep
     await adebug_sleep(1.5)
     mock_sleep.assert_called_once_with(1.5)
 
