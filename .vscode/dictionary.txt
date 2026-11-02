@@ -64,6 +64,7 @@ launchable
 lextudio
 libera
 libjsonnet
+librsvg
 libsonnet
 libx
 linters
@@ -112,6 +113,7 @@ regen
 resp
 ripgreprc
 rstcheck
+rsvg
 rtscts
 sansio
 sbclaude
